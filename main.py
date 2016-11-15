@@ -1,0 +1,469 @@
+import sys, os, time, traceback, datetime, pprint
+import logging, threading, multiprocessing
+import subprocess, json
+
+from PySide import QtGui, QtCore
+from RPi import GPIO
+
+    
+class MainWindow(QtGui.QMainWindow):
+    #Purpose: Provides QMainWindow on which owns all widgets in the application
+    def __init__(self):
+        super(MainWindow, self).__init__()
+        self.setDockOptions(False)
+        self.setDockNestingEnabled(True)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.setWindowTitle('Security Camera')
+        self.Exit = False
+        
+        self.StopHit = False
+        self.CapturingPicture = False
+        
+        self.KeepRunning = True
+        self.CapturingPicture = False
+        self.CapturePictureArgs = None
+        
+        self.EventControls = EventControls(self)
+        self.ViewportPanel = ViewportPanel(self)
+        self.RunControls = RunControls(self)
+        self.TopPane = TopPane(self)
+        
+        self.SettingsWidget = SettingsWidget(self)
+        
+        self.dockThisWidget(self.TopPane, dockArea = QtCore.Qt.LeftDockWidgetArea, noTitle = True)
+        #self.dockThisWidget(self.RunControls, dockArea = QtCore.Qt.BottomDockWidgetArea, noTitle = True)
+        
+        self.resize(QtGui.QDesktopWidget().availableGeometry().width(), QtGui.QDesktopWidget().availableGeometry().height())
+        self.show()
+
+    def ShowSettings(self):
+        self.SettingsWidget.show()
+    def dockThisWidget(self, widget, dockArea = QtCore.Qt.TopDockWidgetArea, noTitle = False):
+        widgetName = widget.accessibleName()
+        if widgetName == '':
+            widgetName = type(widget).__name__
+        dockWidget = QtGui.QDockWidget()
+        dockWidget.setFeatures(False)
+        dockWidget.setWidget(widget)
+        dockWidget.setObjectName(widgetName)
+        dockWidget.setWindowTitle(widgetName)
+        if noTitle:
+            dockWidget.setTitleBarWidget(QtGui.QWidget())
+        self.addDockWidget(dockArea, dockWidget)
+    def sizeHint(self):
+        return QtCore.QSize(800,600)
+    def ExitCleanup(self):
+        self.Exit = True
+
+class PushButton(QtGui.QPushButton):
+    #Purpose: Provides a stylized push button for a consistent look across aplication
+    def __init__(self, Icon):
+        super(PushButton, self).__init__()
+        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setFlat(True)
+        self.setIcon(Icon)
+        self.setIconSize(QtCore.QSize(45,45))
+    def sizeHint(self):
+        return QtCore.QSize(45,45)
+class TextButton(QtGui.QPushButton):
+    #Purpose: Provides a stylized push button with text on it for a consistent look across aplication
+    def __init__(self, Text):
+        super(TextButton, self).__init__(Text)
+        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.setContentsMargins(0, 0, 0, 0)
+    def sizeHint(self):
+        return QtCore.QSize(54,54)
+        
+class TextInputButton(QtGui.QPushButton):
+    #Input button that displays it's text, and calls a touch keyboard for input
+    def __init__(self, parent, CurrentText):
+        super(TextInputButton, self).__init__(CurrentText)
+        self.parent = parent
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        self.pressed.connect(self.ShowDialog)
+    def ShowDialog(self):
+        self.TouchKeyboard = TouchKeyboard(self)
+    def setValue(self, value):
+        self.setText(value)
+    def getValue(self):
+        return self.text()
+    def sizeHint(self):
+        return QtCore.QSize(200,25)
+class TouchKeyboard(QtGui.QWidget):
+    #Purpose: A Touch keyboard for use with touchscreen
+    def __init__(self, parent):
+        super(TouchKeyboard, self).__init__()
+        self.parent = parent
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        self.TextPreview = QtGui.QTextEdit(self.parent.getValue())
+        self.CursorPosition = self.TextPreview.textCursor().position()
+        self.TextPreview.cursorPositionChanged.connect(self.KeepCursor)
+        self.TextPreview.zoomIn(range=8)
+        self.TextPreview.moveCursor(QtGui.QTextCursor.EndOfLine)
+        
+        self.CapsActivated = False        
+        self.show()
+        
+        
+        #Define Buttons
+        self.CapsLockButton = TextButton('Caps')
+        self.CapsLockButton.pressed.connect(self.Caps)
+        self.BackButton = TextButton('Backspace')
+        self.BackButton.pressed.connect(self.Backspace)
+        self.CancelButton = TextButton('Cancel')
+        self.CancelButton.pressed.connect(self.Cancel)
+        self.ApplyButton = TextButton('Apply')
+        self.ApplyButton.pressed.connect(self.Apply)     
+        
+        self.KeyL1 = HLayout()
+        self.KeyL2 = HLayout()
+        self.KeyL3 = HLayout()
+        self.KeyL4 = HLayout()
+        KeyLayouts = [self.KeyL1, self.KeyL2, self.KeyL3, self.KeyL4]
+        KeyLists = [
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+        ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+        ['Z', 'X', 'C', 'V', 'B', 'N', 'M']]
+        for KeyLayout, KeyList in zip(KeyLayouts, KeyLists):
+            KeyLayout.addWidget(HSpacer())
+            for a in KeyList:
+                Button = TextButton(a)
+                Button.pressed.connect(self.KeyPress)
+                KeyLayout.addWidget(Button)
+            KeyLayout.addWidget(HSpacer())        
+        
+        
+        #Define Layouts
+        self.Layout = VLayout()
+        
+        self.KeysLayout = VLayout()
+        self.KeysLayout.addWidget(VSpacer())
+        self.KeysLayout.addLayout(self.KeyL1)
+        self.KeysLayout.addLayout(self.KeyL2)
+        self.KeysLayout.addLayout(self.KeyL3)
+        self.KeysLayout.addLayout(self.KeyL4)
+        
+        self.SpecialKeys = VLayout()
+        self.SpecialKeys.addWidget(VSpacer())
+        self.SpecialKeys.addWidget(self.BackButton)
+        self.SpecialKeys.addWidget(VSpacer())
+        self.SpecialKeys.addWidget(self.CapsLockButton)
+        self.SpecialKeys.addWidget(VSpacer())
+        
+        self.KeyBoard = HLayout()
+        self.KeyBoard.addLayout(self.KeysLayout)
+        self.KeyBoard.addLayout(self.SpecialKeys)
+        
+        self.Buttons = HLayout()
+        self.Buttons.addWidget(self.CancelButton)
+        self.Buttons.addWidget(self.ApplyButton)
+        
+        
+        #Final Layout
+        self.Layout.addWidget(VSpacer())
+        self.Layout.addWidget(self.TextPreview)
+        self.Layout.addWidget(VSpacer())
+        self.Layout.addLayout(self.KeyBoard)
+        self.Layout.addLayout(self.Buttons)
+        self.setLayout(self.Layout)
+        
+    def Cancel(self):
+        self.close()
+    def Apply(self):
+        self.parent.setValue(self.TextPreview.toPlainText())
+        self.close()
+    def Backspace(self):
+        CurrentText = self.TextPreview.toPlainText()
+        CursorPosition = self.CursorPosition
+        self.TextPreview.setText(CurrentText[0:CursorPosition-1]+CurrentText[CursorPosition:])
+        self.TextPreview.setFocus()
+        newcursor = self.TextPreview.textCursor()
+        newcursor.setPosition(CursorPosition-1)
+        self.TextPreview.setTextCursor(newcursor)
+    def Caps(self):
+        self.CapsActivated = not self.CapsActivated
+    def KeyPress(self):
+        CurrentText = self.TextPreview.toPlainText()
+        SentText = self.sender().text()
+        if not self.CapsActivated:
+            SentText = SentText.lower()
+        CursorPosition = self.CursorPosition
+        self.TextPreview.setText(CurrentText[0:CursorPosition]+SentText+CurrentText[CursorPosition:])
+        self.TextPreview.setFocus()
+        
+        newcursor = self.TextPreview.textCursor()
+        newcursor.setPosition(CursorPosition+1)
+        self.TextPreview.setTextCursor(newcursor)
+    def KeepCursor(self):
+        self.CursorPosition = self.TextPreview.textCursor().position()
+    def sizeHint(self):
+        return QtCore.QSize(800,600)
+        
+class ProgressBar(QtGui.QProgressBar):
+    #Purpose: Progress bar to indicate playback position
+    def __init__(self):
+        super(ProgBar, self).__init__()
+        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+    def sizeHint(self):
+        return QtCore.QSize(100,45)
+        
+class ConfigHandler():
+    #Purpose: Saves/Loads json objects, and stores the current configuration
+    def __init__(self):
+        pass
+        self.LoadConfig()
+        self.LoadDefaultConfig()
+    def LoadConfig(self):
+        self.CurrentConf = json.load(open('Conf.json'))
+    def LoadDefaultConfig(self):
+        self.DefaultConf = json.load(open('DefaultConf.json'))
+    def ApplyDefaultConfig(self):
+        self.CurrentConf = copy(self.DefaultConf)
+    def ApplyTempConfig(self):
+        self.CurrentConf = self.TempConf
+    def SetValue(self, key, value):
+        self.TempConf[key] = value
+    def WriteConfig(self):
+        with open('newconf.json', 'w') as file:
+            json.dump(self.CurrentConf, file, sort_keys=True, indent=4, separators=(',', ': '))
+    def SaveSettings(self):
+        self.ApplyTempConfig()
+        self.WriteConfig()
+        
+
+class ToolSpacer(QtGui.QWidget):
+    #Purpose: Useful for spacing inside a QToolBar
+    def __init__(self):
+        super(ToolSpacer, self).__init__()
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+    def sizeHint(self):
+        return QtCore.QSize(0,0)
+class ButtonSpacer(QtGui.QWidget):
+    #Purpose: Fixed spacing of a standard size to keep buttons consistently spaced
+    def __init__(self):
+        super(ButtonSpacer, self).__init__()
+        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+    def sizeHint(self):
+        return QtCore.QSize(45,45)
+class FixedSpacer(QtGui.QWidget):
+    #Purpose: Useful for providing spacing of a fixed size within a layout
+    def __init__(self):
+        super(FixedSpacer, self).__init__()
+        self.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+    def sizeHint(self):
+        return QtCore.QSize(0,0)
+class HLayout(QtGui.QHBoxLayout):
+    #Purpose: Horizontal box layout
+    def __init__(self):
+        super(HLayout, self).__init__()
+        self.setContentsMargins(0, 0, 0, 0)
+class HSpacer(QtGui.QWidget):
+    #Purpose: Use for spacing objects within a horizontal layout
+    def __init__(self):
+        super(HSpacer, self).__init__()
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
+    def sizeHint(self):
+        return QtCore.QSize(0,0)
+class VLayout(QtGui.QVBoxLayout):
+    #Purpose: Vertical box layout
+    def __init__(self):
+        super(VLayout, self).__init__()
+        self.setContentsMargins(0, 0, 0, 0)
+class VSpacer(QtGui.QWidget):
+    #Purpose: Use for spacing objects within a vertical layout
+    def __init__(self):
+        super(VSpacer, self).__init__()
+        self.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
+    def sizeHint(self):
+        return QtCore.QSize(0,0)
+class EventScroller(QtGui.QScrollArea):
+    def __init__(self, parent):
+        super(EventScroller, self).__init__()
+        self.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
+        self.parent = parent
+        self.Layout = VLayout()
+        self.setLayout(self.Layout)
+        self.widgetList = []
+        self.removedList = []
+        #self.setNumber(self.parent.Layers)
+    def setNumber(self, number):
+        if number > len(self.widgetList):
+            for i in range(number-len(self.widgetList)):
+                self.addWidget()
+        elif number < len(self.widgetList):
+            for i in range(len(self.widgetList)-number):
+                self.removeWidget()
+    def addWidget(self):
+        if len(self.removedList) == 0:
+            #widget = EventWidget(self.parent,len(self.widgetList)+1)
+            pass
+        else:
+            widget = self.removedList.pop()
+            widget.show()
+        self.widgetList.append(widget)
+        self.Layout.addWidget(widget)
+    def removeWidget(self):
+        removedWidget = self.widgetList.pop()
+        self.removedList.append(removedWidget)
+        self.Layout.removeWidget(removedWidget)
+        removedWidget.hide()
+    def sizeHint(self):
+        return QtCore.QSize(0,260)
+class EventControls(QtGui.QWidget):
+    def __init__(self, parent):
+        super(EventControls, self).__init__()
+        self.parent = parent
+        self.Layout = QtGui.QVBoxLayout()
+        self.Layout.setContentsMargins(0, 0, 0, 0)
+        self.Layers = EventScroller(self.parent)
+        self.Layout.addWidget(self.Layers)
+        #self.Layout.addWidget(VSpacer())
+        self.SettingsButton = TextButton('Settings')
+        self.Layout.addWidget(self.SettingsButton)
+        
+        self.setLayout(self.Layout)
+        
+        self.SettingsButton.pressed.connect(self.parent.ShowSettings)
+    def __getitem__(self, item):
+        return self.Layers.widgetList[item]
+    def sizeHint(self):
+        return QtCore.QSize(50,100)
+
+class ViewportPanel(QtGui.QWidget):
+    def __init__(self, parent):
+        super(ViewportPanel, self).__init__()
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        
+    def paintEvent(self, pEvent):
+        painter = QtGui.QPainter(self)
+        #DrawBG
+        self.widgetSize = self.size()
+        painter.setBrush(QtGui.QColor(0,0,0))
+        painter.drawRect(0, 0, self.widgetSize.width(), self.widgetSize.height())
+
+        #painter.drawImage(QtCore.QRect(0,0,self.frameCache.width(),self.frameCache.height()), self.frameCache)
+        painter.end()
+    
+class TopPane(QtGui.QWidget):
+    def __init__(self, parent):
+        super(TopPane, self).__init__()
+        self.parent = parent
+        
+        self.Layout = QtGui.QHBoxLayout()
+        self.Preview = QtGui.QVBoxLayout()
+        self.Layout.addWidget(self.parent.EventControls)
+        
+        self.Preview.addWidget(self.parent.ViewportPanel)
+        self.Preview.addWidget(self.parent.RunControls)
+        self.Layout.addLayout(self.Preview)
+        
+        self.setLayout(self.Layout)
+        
+class SettingsWidget(QtGui.QWidget):
+    def __init__(self, parent):
+        super(SettingsWidget, self).__init__()
+        self.parent = parent
+        self.config = ConfigHandler()
+        
+        self.Layout = QtGui.QVBoxLayout()
+        self.SettingsColumns = QtGui.QHBoxLayout()
+        self.Column1 = QtGui.QVBoxLayout()
+        self.Column2 = QtGui.QVBoxLayout()
+        self.ControlButtons = QtGui.QHBoxLayout()
+        
+        self.SettingsColumns.addLayout(self.Column1)
+        self.SettingsColumns.addLayout(self.Column2)
+        self.Layout.addLayout(self.SettingsColumns)
+        self.Layout.addLayout(self.ControlButtons)
+        
+        
+        self.LoginButton = TextInputButton(self, 'Username')
+        self.PasswordButton = TextInputButton(self, 'Password')
+        
+        self.BackButton = TextButton('Back')
+        self.DefaultsButton = TextButton('Restore Defaults')
+        self.ApplyButton = TextButton('Apply')
+        
+        self.Column1.addWidget(self.LoginButton)
+        self.Column1.addWidget(self.PasswordButton)
+        
+        self.ControlButtons.addWidget(self.BackButton)
+        self.ControlButtons.addWidget(self.DefaultsButton)
+        self.ControlButtons.addWidget(self.ApplyButton)
+        
+        
+        self.BackButton.pressed.connect(self.hide)
+        self.setLayout(self.Layout)
+        
+        self.resize(QtGui.QDesktopWidget().availableGeometry().width(), QtGui.QDesktopWidget().availableGeometry().height())
+        
+class RunControls(QtGui.QToolBar):
+    def __init__(self, parent):
+        super(RunControls, self).__init__()
+        self.parent = parent
+        self.setIconSize(QtCore.QSize(45, 45))
+        
+        self.addWidget(ToolSpacer())
+        
+        RunBackward = QtGui.QAction(Icons.RPlay, 'RunBackward', self)
+        #RunBackward.triggered.connect(self.parent.ThreadRunBackward)
+        self.addAction(RunBackward)
+        
+        self.addWidget(ToolSpacer())
+        
+        StepBackward = QtGui.QAction(Icons.RAdvance, 'StepBackward', self)
+        #StepBackward.triggered.connect(self.parent.StepBackward)
+        self.addAction(StepBackward)
+        
+        self.addWidget(ToolSpacer())
+        
+        StopRunning = QtGui.QAction(Icons.Stop, 'StopRunning', self)
+        #StopRunning.triggered.connect(self.parent.StopRunning)
+        self.addAction(StopRunning)
+        
+        self.addWidget(ToolSpacer())
+        
+        StepForward = QtGui.QAction(Icons.Advance, 'StepForward', self)
+        #StepForward.triggered.connect(self.parent.StepForwardCmd)
+        self.addAction(StepForward)
+        
+        self.addWidget(ToolSpacer())
+        
+        RunForward = QtGui.QAction(Icons.Play, 'RunForward', self)
+        #RunForward.triggered.connect(self.parent.ThreadRunForward)
+        self.addAction(RunForward)
+        
+        self.addWidget(ToolSpacer())
+
+def main():
+    global mainAPP
+    mainAPP = QtGui.QApplication(sys.argv)
+    palette = mainAPP.palette()
+    palette.setColor(QtGui.QPalette.Button, QtGui.QColor(60,60,60))
+    palette.setColor(QtGui.QPalette.Background, QtGui.QColor(60,60,60))
+    palette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(60,60,60))
+    palette.setColor(QtGui.QPalette.Base, QtGui.QColor(60,60,60))
+    palette.setColor(QtGui.QPalette.WindowText, QtGui.QColor(255,255,255))
+    palette.setColor(QtGui.QPalette.ButtonText, QtGui.QColor(255,255,255))
+    palette.setColor(QtGui.QPalette.BrightText, QtGui.QColor(255,255,255))
+    palette.setColor(QtGui.QPalette.Text, QtGui.QColor(255,255,255))
+    palette.setColor(QtGui.QPalette.ToolTipText, QtGui.QColor(255,255,255))
+    mainAPP.setPalette(palette)
+    
+    global Icons
+    import Icons
+    
+    global CurrentDirectory
+    CurrentDirectory = __file__.replace('\\','/')
+    if '/' in CurrentDirectory:
+        CurrentDirectory = CurrentDirectory.rsplit('/',1)[0]
+    else:
+        CurrentDirectory = './'
+    
+    Window = MainWindow()
+    mainAPP.lastWindowClosed.connect(Window.ExitCleanup)
+    sys.exit(mainAPP.exec_())
+if __name__ == '__main__':
+    main()
