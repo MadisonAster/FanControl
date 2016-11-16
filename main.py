@@ -52,13 +52,46 @@ class MainWindow(QtGui.QMainWindow):
         self.addDockWidget(dockArea, dockWidget)
     def sizeHint(self):
         return QtCore.QSize(800,600)
-    def ExitCleanup(self):
-        self.Exit = True
+    def QuitProgram(self):
+        quitdialog = YesNoDialog("Are you sure you want to quit?")
+        if quitdialog.GetResult() == True:
+            self.Exit = True
+            QtGui.QApplication.exit()
 
-class PushButton(QtGui.QPushButton):
+class YesNoDialog(QtGui.QMessageBox):
+    #Purpose: Provides a stylized modal dialog for a consistent look across aplication
+    def __init__(self, Question):
+        super(YesNoDialog, self).__init__()
+        self.setText(Question)
+        self.setStandardButtons(QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        
+        self.move(self.width()/2, self.height()/2)
+        self.ret = self.exec_()
+        
+    def GetResult(self):
+        if self.ret == QtGui.QMessageBox.Yes:
+            return True
+        else:
+            return False
+class OkCancelDialog(QtGui.QMessageBox):
+    #Purpose: Provides a stylized modal dialog for a consistent look across aplication
+    def __init__(self, Question):
+        super(OkCancelDialog, self).__init__()
+        self.setText(Question)
+        self.setStandardButtons(QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
+        self.ret = self.exec_()
+    def GetResult(self):
+        if self.ret == QtGui.QMessageBox.Ok:
+            return True
+        else:
+            return False
+        
+        
+class IconButton(QtGui.QPushButton):
     #Purpose: Provides a stylized push button for a consistent look across aplication
     def __init__(self, Icon):
-        super(PushButton, self).__init__()
+        super(IconButton, self).__init__()
         self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.setContentsMargins(0, 0, 0, 0)
         self.setFlat(True)
@@ -70,7 +103,7 @@ class TextButton(QtGui.QPushButton):
     #Purpose: Provides a stylized push button with text on it for a consistent look across aplication
     def __init__(self, Text):
         super(TextButton, self).__init__(Text)
-        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
         self.setContentsMargins(0, 0, 0, 0)
     def sizeHint(self):
         return QtCore.QSize(54,54)
@@ -83,7 +116,9 @@ class TextInputButton(QtGui.QPushButton):
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
         self.pressed.connect(self.ShowDialog)
     def ShowDialog(self):
+        #self.parent.hide()
         self.TouchKeyboard = TouchKeyboard(self)
+        self.TouchKeyboard.show()
     def setValue(self, value):
         self.setText(value)
     def getValue(self):
@@ -107,10 +142,14 @@ class TouchKeyboard(QtGui.QWidget):
         
         
         #Define Buttons
-        self.CapsLockButton = TextButton('Caps')
-        self.CapsLockButton.pressed.connect(self.Caps)
         self.BackButton = TextButton('Backspace')
         self.BackButton.pressed.connect(self.Backspace)
+        self.BackslashButton = TextButton('\\')
+        self.BackslashButton.pressed.connect(self.KeyPress)
+        self.EnterButton = TextButton('Enter')
+        self.EnterButton.pressed.connect(self.EnterPress)
+        self.CapsLockButton = TextButton('Caps')
+        self.CapsLockButton.pressed.connect(self.Caps)
         self.CancelButton = TextButton('Cancel')
         self.CancelButton.pressed.connect(self.Cancel)
         self.ApplyButton = TextButton('Apply')
@@ -149,6 +188,11 @@ class TouchKeyboard(QtGui.QWidget):
         self.SpecialKeys.addWidget(VSpacer())
         self.SpecialKeys.addWidget(self.BackButton)
         self.SpecialKeys.addWidget(VSpacer())
+        self.SpecialKeys.addWidget(self.BackslashButton)
+        self.SpecialKeys.addWidget(VSpacer())
+        self.SpecialKeys.addWidget(VSpacer())
+        self.SpecialKeys.addWidget(self.EnterButton)
+        self.SpecialKeys.addWidget(VSpacer())
         self.SpecialKeys.addWidget(self.CapsLockButton)
         self.SpecialKeys.addWidget(VSpacer())
         
@@ -169,6 +213,8 @@ class TouchKeyboard(QtGui.QWidget):
         self.Layout.addLayout(self.Buttons)
         self.setLayout(self.Layout)
         
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.resize(QtGui.QDesktopWidget().availableGeometry().width(), QtGui.QDesktopWidget().availableGeometry().height())
     def Cancel(self):
         self.close()
     def Apply(self):
@@ -181,6 +227,16 @@ class TouchKeyboard(QtGui.QWidget):
         self.TextPreview.setFocus()
         newcursor = self.TextPreview.textCursor()
         newcursor.setPosition(CursorPosition-1)
+        self.TextPreview.setTextCursor(newcursor)
+    def EnterPress(self):
+        CurrentText = self.TextPreview.toPlainText()
+        SentText = '\n'
+        CursorPosition = self.CursorPosition
+        self.TextPreview.setText(CurrentText[0:CursorPosition]+SentText+CurrentText[CursorPosition:])
+        self.TextPreview.setFocus()
+        
+        newcursor = self.TextPreview.textCursor()
+        newcursor.setPosition(CursorPosition+1)
         self.TextPreview.setTextCursor(newcursor)
     def Caps(self):
         self.CapsActivated = not self.CapsActivated
@@ -322,14 +378,19 @@ class EventControls(QtGui.QWidget):
         #self.Layout.addWidget(VSpacer())
         self.SettingsButton = TextButton('Settings')
         self.Layout.addWidget(self.SettingsButton)
+        self.QuitButton = TextButton('Quit')
+        self.Layout.addWidget(self.QuitButton)
         
         self.setLayout(self.Layout)
         
         self.SettingsButton.pressed.connect(self.parent.ShowSettings)
+        self.QuitButton.pressed.connect(self.parent.QuitProgram)
+        
+        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Expanding)
     def __getitem__(self, item):
         return self.Layers.widgetList[item]
     def sizeHint(self):
-        return QtCore.QSize(50,100)
+        return QtCore.QSize(200,100)
 
 class ViewportPanel(QtGui.QWidget):
     def __init__(self, parent):
@@ -397,6 +458,7 @@ class SettingsWidget(QtGui.QWidget):
         self.BackButton.pressed.connect(self.hide)
         self.setLayout(self.Layout)
         
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.resize(QtGui.QDesktopWidget().availableGeometry().width(), QtGui.QDesktopWidget().availableGeometry().height())
         
 class RunControls(QtGui.QToolBar):
@@ -437,11 +499,58 @@ class RunControls(QtGui.QToolBar):
         
         self.addWidget(ToolSpacer())
 
+def generateStyleSheet(App):
+        palette = App.palette()
+        Window = palette.window().color().name()
+        WindowText = palette.windowText().color().name()
+        Base = palette.base().color().name()
+        AlternateBase = palette.alternateBase().color().name()
+        ToolTipBase = palette.toolTipBase().color().name()
+        ToolTipText = palette.toolTipText().color().name()
+        Text = palette.text().color().name()
+        Button = palette.button().color().name()
+        ButtonText = palette.buttonText().color().name()
+        BrightText = palette.brightText().color().name()
+        Light = palette.light().color().name()
+        Midlight = palette.midlight().color().name()
+        Dark = palette.dark().color().name()
+        Mid = palette.mid().color().name()
+        Shadow = palette.shadow().color().name()
+        Highlight = palette.highlight().color().name()
+        HighlightedText = palette.highlightedText().color().name()
+        Link = palette.link().color().name()
+        LinkVisited = palette.linkVisited().color().name()
+        
+        stylesheet = 'QPushButton {background: '+Button+'; color: '+ButtonText+';}\n'
+        stylesheet += 'QLineEdit {background: '+Mid+'; color: '+ButtonText+'; border: '+Shadow+';}\n'
+        stylesheet += 'QComboBox {background: '+Button+'; color: '+ButtonText+'; border: '+Shadow+';}\n'
+        stylesheet += 'QDockWidget {border: '+Shadow+';}\n'
+        stylesheet += 'QDockWidget::title {background: '+Dark+';}\n'
+        stylesheet += 'QMessageBox {background: '+Dark+'; color: '+WindowText+';}\n'
+        stylesheet += 'QMenuBar {background: '+Window+'; color: '+WindowText+';}\n'
+        stylesheet += 'QMenuBar::item {background: '+Window+';}\n'
+        stylesheet += 'QMenu {background: '+Window+'; color: '+WindowText+';}\n'
+        
+        stylesheet += 'QScrollBar:vertical {background: '+Window+'; border: 1px inset;}\n'
+        stylesheet += 'QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: none;}\n'
+        stylesheet += 'QScrollBar::handle:vertical {background: '+Button+'; margin: 24px 0 24px 0;}\n'
+       
+        stylesheet += 'QScrollBar:horizontal {background: '+Window+'; border: 1px inset;}\n'
+        stylesheet += 'QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {background: none;}\n'
+        stylesheet += 'QScrollBar::handle:horizontal {background: '+Button+'; margin: 0 24px 0 24px;}\n'
+        
+        stylesheet += 'QToolBar{background: '+Window+'; spacing: 3px;}\n'
+        #stylesheet += "QScrollBar::add-line:vertical { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0  rgb(32, 47, 130), stop: 0.5 rgb(32, 47, 130),  stop:1 rgb(32, 47, 130)); height: px; subcontrol-position: bottom; subcontrol-origin: margin;}"
+        
+        return stylesheet
+        
 def main():
     global mainAPP
     mainAPP = QtGui.QApplication(sys.argv)
     palette = mainAPP.palette()
-    palette.setColor(QtGui.QPalette.Button, QtGui.QColor(60,60,60))
+    palette.setColor(QtGui.QPalette.Button, QtGui.QColor(30,30,30))
+    palette.setColor(QtGui.QPalette.Shadow, QtGui.QColor(0,0,0))
+    palette.setColor(QtGui.QPalette.Dark, QtGui.QColor(45,45,45))
     palette.setColor(QtGui.QPalette.Background, QtGui.QColor(60,60,60))
     palette.setColor(QtGui.QPalette.AlternateBase, QtGui.QColor(60,60,60))
     palette.setColor(QtGui.QPalette.Base, QtGui.QColor(60,60,60))
@@ -451,6 +560,9 @@ def main():
     palette.setColor(QtGui.QPalette.Text, QtGui.QColor(255,255,255))
     palette.setColor(QtGui.QPalette.ToolTipText, QtGui.QColor(255,255,255))
     mainAPP.setPalette(palette)
+    
+    mainAPP.setStyleSheet(generateStyleSheet(mainAPP))
+    
     
     global Icons
     import Icons
@@ -463,7 +575,6 @@ def main():
         CurrentDirectory = './'
     
     Window = MainWindow()
-    mainAPP.lastWindowClosed.connect(Window.ExitCleanup)
     sys.exit(mainAPP.exec_())
 if __name__ == '__main__':
     main()
