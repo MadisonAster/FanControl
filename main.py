@@ -125,6 +125,120 @@ class TextInputButton(QtGui.QPushButton):
         return self.text()
     def sizeHint(self):
         return QtCore.QSize(200,25)
+        
+class FloatInputWidget(QtGui.QWidget):
+    def __init__(self, parent, Label, CurrentText):
+        super(FloatInputWidget, self).__init__()
+        
+        self.Label = QtGui.QLabel(Label)
+        self.InputLine = TextInputLine(parent, str(CurrentText))
+        
+        self.Layout = HLayout()
+        self.Layout.addWidget(self.Label)
+        self.Layout.addWidget(self.InputLine)
+        self.setLayout(self.Layout)
+    def getValue(self):
+        return self.InputLine.getValue()
+    def setValue(self, value):
+        return self.InputLine.setValue(value)
+class FloatInputLine(QtGui.QLineEdit):
+    #Input button that displays it's text, and calls a touch keyboard for input
+    def __init__(self, parent, CurrentText):
+        super(FloatInputLine, self).__init__(CurrentText)
+        self.parent = parent
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        #self.pressed.connect(self.ShowDialog)
+        #self.focusIn = QtCore.Signal()
+        #self.focusIn.connect(self.ShowDialog)
+    def ShowDialog(self):
+        #self.parent.hide()
+        self.TouchKeyboard = TouchKeyboard(self)
+        self.TouchKeyboard.show()
+    def focusInEvent(self, event):
+        super(TextInputLine, self).focusInEvent(event)
+        self.ShowDialog()
+    def setValue(self, value):
+        self.setText(str(float(value)))
+    def getValue(self):
+        return float(self.text())
+    def sizeHint(self):
+        return QtCore.QSize(200,25)
+        
+class IntInputWidget(QtGui.QWidget):
+    def __init__(self, parent, Label, CurrentText):
+        super(IntInputWidget, self).__init__()
+        
+        self.Label = QtGui.QLabel(Label)
+        self.InputLine = TextInputLine(parent, str(CurrentText))
+        
+        self.Layout = HLayout()
+        self.Layout.addWidget(self.Label)
+        self.Layout.addWidget(self.InputLine)
+        self.setLayout(self.Layout)
+    def getValue(self):
+        return self.InputLine.getValue()
+    def setValue(self, value):
+        return self.InputLine.setValue(value)
+class IntInputLine(QtGui.QLineEdit):
+    #Input button that displays it's text, and calls a touch keyboard for input
+    def __init__(self, parent, CurrentText):
+        super(IntInputLine, self).__init__(CurrentText)
+        self.parent = parent
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        #self.pressed.connect(self.ShowDialog)
+        #self.focusIn = QtCore.Signal()
+        #self.focusIn.connect(self.ShowDialog)
+    def ShowDialog(self):
+        #self.parent.hide()
+        self.TouchKeyboard = TouchKeyboard(self)
+        self.TouchKeyboard.show()
+    def focusInEvent(self, event):
+        super(TextInputLine, self).focusInEvent(event)
+        self.ShowDialog()
+    def setValue(self, value):
+        self.setText(str(int(value)))
+    def getValue(self):
+        return int(self.text())
+    def sizeHint(self):
+        return QtCore.QSize(200,25)
+        
+class TextInputWidget(QtGui.QWidget):
+    def __init__(self, parent, Label, CurrentText):
+        super(TextInputWidget, self).__init__()
+        
+        self.Label = QtGui.QLabel(Label)
+        self.InputLine = TextInputLine(parent, CurrentText)
+        
+        self.Layout = HLayout()
+        self.Layout.addWidget(self.Label)
+        self.Layout.addWidget(self.InputLine)
+        self.setLayout(self.Layout)
+    def getValue(self):
+        return self.InputLine.getValue()
+    def setValue(self, value):
+        return self.InputLine.setValue(value)
+class TextInputLine(QtGui.QLineEdit):
+    #Input button that displays it's text, and calls a touch keyboard for input
+    def __init__(self, parent, CurrentText):
+        super(TextInputLine, self).__init__(CurrentText)
+        self.parent = parent
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        #self.pressed.connect(self.ShowDialog)
+        #self.focusIn = QtCore.Signal()
+        #self.focusIn.connect(self.ShowDialog)
+    def ShowDialog(self):
+        #self.parent.hide()
+        self.TouchKeyboard = TouchKeyboard(self)
+        self.TouchKeyboard.show()
+    def focusInEvent(self, event):
+        super(TextInputLine, self).focusInEvent(event)
+        self.ShowDialog()
+    def setValue(self, value):
+        self.setText(value)
+    def getValue(self):
+        return self.text()
+    def sizeHint(self):
+        return QtCore.QSize(200,25)
 class TouchKeyboard(QtGui.QWidget):
     #Purpose: A Touch keyboard for use with touchscreen
     def __init__(self, parent):
@@ -216,9 +330,11 @@ class TouchKeyboard(QtGui.QWidget):
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.resize(QtGui.QDesktopWidget().availableGeometry().width(), QtGui.QDesktopWidget().availableGeometry().height())
     def Cancel(self):
+        self.parent.clearFocus()
         self.close()
     def Apply(self):
         self.parent.setValue(self.TextPreview.toPlainText())
+        self.parent.clearFocus()
         self.close()
     def Backspace(self):
         CurrentText = self.TextPreview.toPlainText()
@@ -421,6 +537,24 @@ class TopPane(QtGui.QWidget):
         self.Layout.addLayout(self.Preview)
         
         self.setLayout(self.Layout)
+
+class CheckboxKnob(QtGui.QCheckBox):
+    def __init__(self, labelText):
+        super(CheckboxKnob, self).__init__(labelText)
+    #def sizeHint(self):
+    #    return QtCore.QSize(16,16)
+    def setValue(self, value):
+        if value == True:
+            self.setCheckState(QtCore.Qt.Checked)
+        else:
+            self.setCheckState(QtCore.Qt.Unchecked)
+        self.update()
+    def getValue(self):
+        value = self.checkState()
+        if value == QtCore.Qt.Checked:
+            return True
+        if value == QtCore.Qt.Unchecked:
+            return False
         
 class SettingsWidget(QtGui.QWidget):
     def __init__(self, parent):
@@ -439,6 +573,7 @@ class SettingsWidget(QtGui.QWidget):
         self.Layout.addLayout(self.SettingsColumns)
         self.Layout.addLayout(self.ControlButtons)
         
+        #########################################
         
         self.LoginButton = TextInputButton(self, 'Username')
         self.PasswordButton = TextInputButton(self, 'Password')
@@ -446,9 +581,32 @@ class SettingsWidget(QtGui.QWidget):
         self.BackButton = TextButton('Back')
         self.DefaultsButton = TextButton('Restore Defaults')
         self.ApplyButton = TextButton('Apply')
+
+        self.ConfigButtons  = []
+        for a in self.config.CurrentConf:
+            value = self.config.CurrentConf[a]
+            print a, value, type(value)
+            if type(value) == bool:
+                thisbutton = CheckboxKnob(a)
+                thisbutton.setValue(value)
+                thisbutton.stateChanged.connect(self.setBool)
+            elif type(value) == float:
+                thisbutton = FloatInputWidget(self, str(a), value)
+            elif type(value) == int:
+                thisbutton = IntInputWidget(self, str(a), value)
+            
+            elif type(value) == unicode:
+                thisbutton = TextInputWidget(self, str(a), value)
+            self.ConfigButtons.append(thisbutton)
+        
+        ########################################
         
         self.Column1.addWidget(self.LoginButton)
         self.Column1.addWidget(self.PasswordButton)
+        
+        
+        for a in self.ConfigButtons:
+            self.Column2.addWidget(a)
         
         self.ControlButtons.addWidget(self.BackButton)
         self.ControlButtons.addWidget(self.DefaultsButton)
@@ -460,7 +618,12 @@ class SettingsWidget(QtGui.QWidget):
         
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.resize(QtGui.QDesktopWidget().availableGeometry().width(), QtGui.QDesktopWidget().availableGeometry().height())
-        
+    def setBool(self):
+        BoolState = self.sender().checkState()
+        SentText = self.sender().text()
+        print SentText, BoolState
+
+    
 class RunControls(QtGui.QToolBar):
     def __init__(self, parent):
         super(RunControls, self).__init__()
@@ -522,8 +685,9 @@ def generateStyleSheet(App):
         LinkVisited = palette.linkVisited().color().name()
         
         stylesheet = 'QPushButton {background: '+Button+'; color: '+ButtonText+';}\n'
-        stylesheet += 'QLineEdit {background: '+Mid+'; color: '+ButtonText+'; border: '+Shadow+';}\n'
+        stylesheet += 'QLineEdit {background: '+Button+'; color: '+ButtonText+'; border: '+Shadow+';}\n'
         stylesheet += 'QComboBox {background: '+Button+'; color: '+ButtonText+'; border: '+Shadow+';}\n'
+        stylesheet += 'QCheckBox {color: '+ButtonText+'; border: '+Shadow+';}\n'
         stylesheet += 'QDockWidget {border: '+Shadow+';}\n'
         stylesheet += 'QDockWidget::title {background: '+Dark+';}\n'
         stylesheet += 'QMessageBox {background: '+Dark+'; color: '+WindowText+';}\n'
