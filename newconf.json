@@ -1,0 +1,15 @@
+{
+	"ShowVideo": true,
+	"UseDropbox": false,
+	"dropbox_key": "YOUR_DROPBOX_KEY",
+	"dropbox_secret": "YOUR_DROPBOX_SECRET",
+	"dropbox_base_path": "YOUR_DROPBOX_PATH",
+	"min_upload_seconds": 3.0,
+	"min_motion_frames": 8,
+	"camera_warmup_time": 2.5,
+	"delta_thresh": 5,
+	"resolutionwidth": 640,
+	"resolutionheight": 480,
+	"fps": 16,
+	"min_area": 5000
+}

@@ -643,12 +643,13 @@ class SettingsWidget(QtGui.QWidget):
         
         ########################################
         
-        self.Column1.addWidget(self.LoginButton)
-        self.Column1.addWidget(self.PasswordButton)
-        
-        
+        counter = 0
         for a in self.ConfigButtons:
-            self.Column2.addWidget(self.ConfigButtons[a])
+            if counter < 12:
+                counter += 1
+                self.Column1.addWidget(self.ConfigButtons[a])
+            else:
+                self.Column2.addWidget(self.ConfigButtons[a])
         
         self.ControlButtons.addWidget(self.BackButton)
         self.ControlButtons.addWidget(self.DefaultsButton)
@@ -671,7 +672,7 @@ class SettingsWidget(QtGui.QWidget):
     def setTempValue(self, key, value):
         self.config.setValue(key, value)
     def Apply(self):    
-        self.config.ApplyTempConfig()
+        self.config.SaveSettings()
         self.setValuesToCurrent()
     def ApplyDefault(self):    
         self.config.ApplyDefaultConfig()
