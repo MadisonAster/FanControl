@@ -126,7 +126,45 @@ class TextInputButton(QtGui.QPushButton):
         return self.text()
     def sizeHint(self):
         return QtCore.QSize(200,25)
+
+class BoolInputWidget(QtGui.QWidget):
+    def __init__(self, parent, Label, CurrentText):
+        super(IntInputWidget, self).__init__()
+        self.parent = parent
+        self.Label = QtGui.QLabel(Label)
+        self.InputLine = IntInputLine(self, str(CurrentText))
         
+        self.Layout = HLayout()
+        self.Layout.addWidget(self.Label)
+        self.Layout.addWidget(self.InputLine)
+        self.setLayout(self.Layout)
+    def getValue(self):
+        return self.InputLine.getValue()
+    def setValue(self, value):
+        return self.InputLine.setValue(value)
+    def text(self):
+        return self.Label.text() 
+    def setTempValue(self):
+        self.parent.setTempValue(self.text(), self.InputLine.getValue())
+class BoolInputLine(QtGui.QLineEdit):
+    #Input button that displays it's text, and calls a touch keyboard for input
+    def __init__(self, parent, CurrentText):
+        super(IntInputLine, self).__init__(CurrentText)
+        self.parent = parent
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        self.editingFinished.connect(self.parent.setTempValue)
+    def ShowDialog(self):
+        self.TouchKeyboard = TouchKeyboard(self)
+        self.TouchKeyboard.show()
+    def focusInEvent(self, event):
+        super(IntInputLine, self).focusInEvent(event)
+        self.ShowDialog()
+    def setValue(self, value):
+        self.setText(str(int(value)))
+    def getValue(self):
+        return int(self.text())
+    def sizeHint(self):
+        return QtCore.QSize(100,25)        
 class FloatInputWidget(QtGui.QWidget):
     def __init__(self, parent, Label, CurrentText):
         super(FloatInputWidget, self).__init__()
@@ -396,11 +434,12 @@ class ConfigHandler():
     def LoadDefaultConfig(self):
         self.DefaultConf = json.load(open('DefaultConf.json'))
     def ApplyDefaultConfig(self):
-        self.CurrentConf = copy(self.DefaultConf)
+        self.CurrentConf = copy.copy(self.DefaultConf)
     def ApplyTempConfig(self):
-        self.CurrentConf = self.TempConf
+        self.CurrentConf = copy.copy(self.TempConf)
+    def CopyCurrentConfig(self):
+        self.TempConf = copy.copy(self.TempConf)
     def setValue(self, key, value):
-        print 'setting value', key, value, type(value)
         self.TempConf[key] = value
     def WriteConfig(self):
         with open('newconf.json', 'w') as file:
@@ -587,10 +626,9 @@ class SettingsWidget(QtGui.QWidget):
         self.DefaultsButton = TextButton('Restore Defaults')
         self.ApplyButton = TextButton('Apply')
 
-        self.ConfigButtons  = []
+        self.ConfigButtons = {}
         for a in self.config.CurrentConf:
             value = self.config.CurrentConf[a]
-            print a, value, type(value)
             if type(value) == bool:
                 thisbutton = CheckboxKnob(a)
                 thisbutton.setValue(value)
@@ -599,10 +637,9 @@ class SettingsWidget(QtGui.QWidget):
                 thisbutton = FloatInputWidget(self, str(a), value)
             elif type(value) == int:
                 thisbutton = IntInputWidget(self, str(a), value)
-            
             elif type(value) == unicode:
                 thisbutton = TextInputWidget(self, str(a), value)
-            self.ConfigButtons.append(thisbutton)
+            self.ConfigButtons[a] = thisbutton
         
         ########################################
         
@@ -611,25 +648,38 @@ class SettingsWidget(QtGui.QWidget):
         
         
         for a in self.ConfigButtons:
-            self.Column2.addWidget(a)
+            self.Column2.addWidget(self.ConfigButtons[a])
         
         self.ControlButtons.addWidget(self.BackButton)
         self.ControlButtons.addWidget(self.DefaultsButton)
         self.ControlButtons.addWidget(self.ApplyButton)
         
-        
-        self.BackButton.pressed.connect(self.hide)
+        self.BackButton.pressed.connect(self.Back)
+        self.DefaultsButton.pressed.connect(self.ApplyDefault)
+        self.ApplyButton.pressed.connect(self.Apply)
         self.setLayout(self.Layout)
         
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.resize(QtGui.QDesktopWidget().availableGeometry().width(), QtGui.QDesktopWidget().availableGeometry().height())
+    def setValuesToCurrent(self):
+        for a in self.config.CurrentConf:
+            value = self.config.CurrentConf[a]
+            self.ConfigButtons[a].setValue(value)
     def setBool(self):
         BoolState = self.sender().checkState()
         SentText = self.sender().text()
-        print SentText, BoolState
     def setTempValue(self, key, value):
         self.config.setValue(key, value)
-        pprint(self.config.TempConf)
+    def Apply(self):    
+        self.config.ApplyTempConfig()
+        self.setValuesToCurrent()
+    def ApplyDefault(self):    
+        self.config.ApplyDefaultConfig()
+        self.setValuesToCurrent()
+    def Back(self):
+        self.config.CopyCurrentConfig()
+        self.setValuesToCurrent()
+        self.hide()
     
 class RunControls(QtGui.QToolBar):
     def __init__(self, parent):
