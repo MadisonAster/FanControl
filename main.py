@@ -1,6 +1,7 @@
 import sys, os, time, traceback, datetime, pprint
 import logging, threading, multiprocessing
-import subprocess, json
+import subprocess, json, copy
+from pprint import pprint
 
 from PySide import QtGui, QtCore
 from RPi import GPIO
@@ -129,9 +130,9 @@ class TextInputButton(QtGui.QPushButton):
 class FloatInputWidget(QtGui.QWidget):
     def __init__(self, parent, Label, CurrentText):
         super(FloatInputWidget, self).__init__()
-        
+        self.parent = parent
         self.Label = QtGui.QLabel(Label)
-        self.InputLine = TextInputLine(parent, str(CurrentText))
+        self.InputLine = FloatInputLine(self, str(CurrentText))
         
         self.Layout = HLayout()
         self.Layout.addWidget(self.Label)
@@ -141,35 +142,35 @@ class FloatInputWidget(QtGui.QWidget):
         return self.InputLine.getValue()
     def setValue(self, value):
         return self.InputLine.setValue(value)
+    def text(self):
+        return self.Label.text()
+    def setTempValue(self):
+        self.parent.setTempValue(self.text(), self.InputLine.getValue())
 class FloatInputLine(QtGui.QLineEdit):
     #Input button that displays it's text, and calls a touch keyboard for input
     def __init__(self, parent, CurrentText):
         super(FloatInputLine, self).__init__(CurrentText)
         self.parent = parent
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
-        #self.pressed.connect(self.ShowDialog)
-        #self.focusIn = QtCore.Signal()
-        #self.focusIn.connect(self.ShowDialog)
+        self.editingFinished.connect(self.parent.setTempValue)
     def ShowDialog(self):
-        #self.parent.hide()
         self.TouchKeyboard = TouchKeyboard(self)
         self.TouchKeyboard.show()
     def focusInEvent(self, event):
-        super(TextInputLine, self).focusInEvent(event)
+        super(FloatInputLine, self).focusInEvent(event)
         self.ShowDialog()
     def setValue(self, value):
         self.setText(str(float(value)))
     def getValue(self):
         return float(self.text())
     def sizeHint(self):
-        return QtCore.QSize(200,25)
-        
+        return QtCore.QSize(100,25) 
 class IntInputWidget(QtGui.QWidget):
     def __init__(self, parent, Label, CurrentText):
         super(IntInputWidget, self).__init__()
-        
+        self.parent = parent
         self.Label = QtGui.QLabel(Label)
-        self.InputLine = TextInputLine(parent, str(CurrentText))
+        self.InputLine = IntInputLine(self, str(CurrentText))
         
         self.Layout = HLayout()
         self.Layout.addWidget(self.Label)
@@ -179,35 +180,35 @@ class IntInputWidget(QtGui.QWidget):
         return self.InputLine.getValue()
     def setValue(self, value):
         return self.InputLine.setValue(value)
+    def text(self):
+        return self.Label.text() 
+    def setTempValue(self):
+        self.parent.setTempValue(self.text(), self.InputLine.getValue())
 class IntInputLine(QtGui.QLineEdit):
     #Input button that displays it's text, and calls a touch keyboard for input
     def __init__(self, parent, CurrentText):
         super(IntInputLine, self).__init__(CurrentText)
         self.parent = parent
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
-        #self.pressed.connect(self.ShowDialog)
-        #self.focusIn = QtCore.Signal()
-        #self.focusIn.connect(self.ShowDialog)
+        self.editingFinished.connect(self.parent.setTempValue)
     def ShowDialog(self):
-        #self.parent.hide()
         self.TouchKeyboard = TouchKeyboard(self)
         self.TouchKeyboard.show()
     def focusInEvent(self, event):
-        super(TextInputLine, self).focusInEvent(event)
+        super(IntInputLine, self).focusInEvent(event)
         self.ShowDialog()
     def setValue(self, value):
         self.setText(str(int(value)))
     def getValue(self):
         return int(self.text())
     def sizeHint(self):
-        return QtCore.QSize(200,25)
-        
+        return QtCore.QSize(100,25)
 class TextInputWidget(QtGui.QWidget):
     def __init__(self, parent, Label, CurrentText):
         super(TextInputWidget, self).__init__()
-        
+        self.parent = parent
         self.Label = QtGui.QLabel(Label)
-        self.InputLine = TextInputLine(parent, CurrentText)
+        self.InputLine = TextInputLine(self, CurrentText)
         
         self.Layout = HLayout()
         self.Layout.addWidget(self.Label)
@@ -217,17 +218,18 @@ class TextInputWidget(QtGui.QWidget):
         return self.InputLine.getValue()
     def setValue(self, value):
         return self.InputLine.setValue(value)
+    def text(self):
+        return self.Label.text()
+    def setTempValue(self):
+        self.parent.setTempValue(self.text(), self.InputLine.getValue())
 class TextInputLine(QtGui.QLineEdit):
     #Input button that displays it's text, and calls a touch keyboard for input
     def __init__(self, parent, CurrentText):
         super(TextInputLine, self).__init__(CurrentText)
         self.parent = parent
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
-        #self.pressed.connect(self.ShowDialog)
-        #self.focusIn = QtCore.Signal()
-        #self.focusIn.connect(self.ShowDialog)
+        self.editingFinished.connect(self.parent.setTempValue)
     def ShowDialog(self):
-        #self.parent.hide()
         self.TouchKeyboard = TouchKeyboard(self)
         self.TouchKeyboard.show()
     def focusInEvent(self, event):
@@ -239,13 +241,14 @@ class TextInputLine(QtGui.QLineEdit):
         return self.text()
     def sizeHint(self):
         return QtCore.QSize(200,25)
+        
 class TouchKeyboard(QtGui.QWidget):
     #Purpose: A Touch keyboard for use with touchscreen
     def __init__(self, parent):
         super(TouchKeyboard, self).__init__()
         self.parent = parent
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        self.TextPreview = QtGui.QTextEdit(self.parent.getValue())
+        self.TextPreview = QtGui.QTextEdit(str(self.parent.getValue()))
         self.CursorPosition = self.TextPreview.textCursor().position()
         self.TextPreview.cursorPositionChanged.connect(self.KeepCursor)
         self.TextPreview.zoomIn(range=8)
@@ -335,6 +338,7 @@ class TouchKeyboard(QtGui.QWidget):
     def Apply(self):
         self.parent.setValue(self.TextPreview.toPlainText())
         self.parent.clearFocus()
+        self.parent.editingFinished.emit()
         self.close()
     def Backspace(self):
         CurrentText = self.TextPreview.toPlainText()
@@ -384,18 +388,19 @@ class ProgressBar(QtGui.QProgressBar):
 class ConfigHandler():
     #Purpose: Saves/Loads json objects, and stores the current configuration
     def __init__(self):
-        pass
         self.LoadConfig()
         self.LoadDefaultConfig()
     def LoadConfig(self):
         self.CurrentConf = json.load(open('Conf.json'))
+        self.TempConf = copy.copy(self.CurrentConf)
     def LoadDefaultConfig(self):
         self.DefaultConf = json.load(open('DefaultConf.json'))
     def ApplyDefaultConfig(self):
         self.CurrentConf = copy(self.DefaultConf)
     def ApplyTempConfig(self):
         self.CurrentConf = self.TempConf
-    def SetValue(self, key, value):
+    def setValue(self, key, value):
+        print 'setting value', key, value, type(value)
         self.TempConf[key] = value
     def WriteConfig(self):
         with open('newconf.json', 'w') as file:
@@ -622,7 +627,9 @@ class SettingsWidget(QtGui.QWidget):
         BoolState = self.sender().checkState()
         SentText = self.sender().text()
         print SentText, BoolState
-
+    def setTempValue(self, key, value):
+        self.config.setValue(key, value)
+        pprint(self.config.TempConf)
     
 class RunControls(QtGui.QToolBar):
     def __init__(self, parent):
