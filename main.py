@@ -247,7 +247,7 @@ class TouchKeyboard(QtGui.QWidget):
             SentText = SentText.lower()
         CursorPosition = self.CursorPosition
         self.TextPreview.setText(CurrentText[0:CursorPosition]+SentText+CurrentText[CursorPosition:])
-        self.TextPreview.setFocus()
+        #self.TextPreview.setFocus()
         
         newcursor = self.TextPreview.textCursor()
         newcursor.setPosition(CursorPosition+1)
