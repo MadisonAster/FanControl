@@ -447,11 +447,30 @@ class ConfigHandler():
         self.ApplyTempConfig()
         self.WriteConfig()
         
-
-class VertSlider(QtGui.QSlider):
-    def __init__(self):
-        super(VertSlider, self).__init__(QtCore.Qt.Vertical)
+class EchoSlider(QtGui.QSlider):
+    def __init__(self, SliderNumber):
+        super(EchoSlider, self).__init__(QtCore.Qt.Vertical)
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        self.setRange(0.0, 10)
+        self.setSingleStep(1)
+        self.setPageStep(1)
+    def sizeHint(self):
+        return QtCore.QSize(50,300)
+class VertSlider(QtGui.QWidget):
+    def __init__(self, SliderNumber, Label):
+        super(VertSlider, self).__init__()
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        
+        self.Label = QtGui.QLabel(str(Label))
+        self.Label.setIndent(35)
+        self.EchoSlider = EchoSlider(SliderNumber)
+        
+        self.Layout = QtGui.QStackedLayout()
+        self.Layout.setStackingMode(QtGui.QStackedLayout.StackAll)
+        self.Layout.addWidget(self.Label)
+        self.Layout.addWidget(self.EchoSlider)
+        
+        self.setLayout(self.Layout)
     def sizeHint(self):
         return QtCore.QSize(50,300)
         
@@ -471,11 +490,13 @@ class ButtonSpacer(QtGui.QWidget):
         return QtCore.QSize(45,45)
 class FixedSpacer(QtGui.QWidget):
     #Purpose: Useful for providing spacing of a fixed size within a layout
-    def __init__(self):
+    def __init__(self, width = 0, height = 0):
         super(FixedSpacer, self).__init__()
         self.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        self.width = width
+        self.height = height
     def sizeHint(self):
-        return QtCore.QSize(0,0)
+        return QtCore.QSize(self.width, self.height)
 class HLayout(QtGui.QHBoxLayout):
     #Purpose: Horizontal box layout
     def __init__(self):
@@ -529,11 +550,28 @@ class TopPane(QtGui.QWidget):
         self.parent = parent
         
         self.Layout = QtGui.QHBoxLayout()
-        self.Preview = QtGui.QVBoxLayout()
-        self.Layout.addWidget(self.parent.EventControls)
+        self.Sliders = QtGui.QVBoxLayout()
+        self.SliderSet1 = QtGui.QHBoxLayout()
+        self.SliderSet2 = QtGui.QHBoxLayout()
         
-        self.Preview.addWidget(self.parent.RunControls)
-        self.Layout.addLayout(self.Preview)
+        FanList1 = [10,3,5,7,9,11,13,15]
+        FanList2 = [17,19,21,23,25,27,26]
+        
+        self.MasterSlider = VertSlider(0, 'master')
+        
+        for a in FanList1:
+            self.SliderSet1.addWidget(VertSlider(a, str(a)))
+        for a in FanList2:
+            self.SliderSet2.addWidget(VertSlider(a, str(a)))
+        else:
+            self.SliderSet2.addWidget(FixedSpacer(width = 62, height = 300))
+        
+        
+        self.Sliders.addLayout(self.SliderSet1)
+        self.Sliders.addLayout(self.SliderSet2)
+        self.Layout.addWidget(self.parent.EventControls)
+        self.Layout.addWidget(self.MasterSlider)
+        self.Layout.addLayout(self.Sliders)
         
         self.setLayout(self.Layout)
 
