@@ -454,10 +454,12 @@ class EchoSlider(QtGui.QSlider):
         self.setRange(0.0, 10)
         self.setSingleStep(1)
         self.setPageStep(1)
+        
+        self.SliderNumber = SliderNumber
     def sizeHint(self):
         return QtCore.QSize(50,300)
 class VertSlider(QtGui.QWidget):
-    def __init__(self, SliderNumber, Label):
+    def __init__(self, SliderNumber, Label, action):
         super(VertSlider, self).__init__()
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         
@@ -471,9 +473,19 @@ class VertSlider(QtGui.QWidget):
         self.Layout.addWidget(self.EchoSlider)
         
         self.setLayout(self.Layout)
+        
+        self.EchoSlider.valueChanged.connect(action)
     def sizeHint(self):
         return QtCore.QSize(50,300)
-        
+    def setRepeatAction(self, *args):
+        return self.EchoSlider.setRepeatAction(*args)
+    def setSliderPosition(self, *args):
+        return self.EchoSlider.setSliderPosition(*args)
+    def setSliderPosition(self, *args):
+        return self.EchoSlider.setSliderPosition(*args)
+    def sliderPosition(self):
+        return self.EchoSlider.sliderPosition()
+    
 class ToolSpacer(QtGui.QWidget):
     #Purpose: Useful for spacing inside a QToolBar
     def __init__(self):
@@ -556,13 +568,18 @@ class TopPane(QtGui.QWidget):
         
         FanList1 = [10,3,5,7,9,11,13,15]
         FanList2 = [17,19,21,23,25,27,26]
+        self.FanWidgets = []
         
-        self.MasterSlider = VertSlider(0, 'master')
+        self.MasterSlider = VertSlider(0, 'master', self.SetSliders)
         
         for a in FanList1:
-            self.SliderSet1.addWidget(VertSlider(a, str(a)))
+            slider = VertSlider(a, str(a), self.EchoValue)
+            self.SliderSet1.addWidget(slider)
+            self.FanWidgets.append(slider)
         for a in FanList2:
-            self.SliderSet2.addWidget(VertSlider(a, str(a)))
+            slider = VertSlider(a, str(a), self.EchoValue)
+            self.SliderSet2.addWidget(slider)
+            self.FanWidgets.append(slider)
         else:
             self.SliderSet2.addWidget(FixedSpacer(width = 62, height = 300))
         
@@ -574,7 +591,15 @@ class TopPane(QtGui.QWidget):
         self.Layout.addLayout(self.Sliders)
         
         self.setLayout(self.Layout)
-
+    def SetSliders(self):
+        for slider in self.FanWidgets:
+            slider.setSliderPosition(self.MasterSlider.sliderPosition())
+    def EchoValue(self):
+        value = self.sender().sliderPosition()/10.0
+        pin = self.sender().SliderNumber
+        cmd = 'echo "'+str(pin)+'='+str(value)+'" > /dev/pi-blaster'
+        subprocess.call(cmd)
+        #print cmd
 class CheckboxKnob(QtGui.QCheckBox):
     def __init__(self, labelText):
         super(CheckboxKnob, self).__init__(labelText)
