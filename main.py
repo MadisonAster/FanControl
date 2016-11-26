@@ -105,45 +105,7 @@ class TextButton(QtGui.QPushButton):
         self.setContentsMargins(0, 0, 0, 0)
     def sizeHint(self):
         return QtCore.QSize(54,54)
-        
-class BoolInputWidget(QtGui.QWidget):
-    def __init__(self, parent, Label, CurrentText):
-        super(IntInputWidget, self).__init__()
-        self.parent = parent
-        self.Label = QtGui.QLabel(Label)
-        self.InputLine = IntInputLine(self, str(CurrentText))
-        
-        self.Layout = HLayout()
-        self.Layout.addWidget(self.Label)
-        self.Layout.addWidget(self.InputLine)
-        self.setLayout(self.Layout)
-    def getValue(self):
-        return self.InputLine.getValue()
-    def setValue(self, value):
-        return self.InputLine.setValue(value)
-    def text(self):
-        return self.Label.text() 
-    def setTempValue(self):
-        self.parent.setTempValue(self.text(), self.InputLine.getValue())
-class BoolInputLine(QtGui.QLineEdit):
-    #Input button that displays it's text, and calls a touch keyboard for input
-    def __init__(self, parent, CurrentText):
-        super(IntInputLine, self).__init__(CurrentText)
-        self.parent = parent
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
-        self.editingFinished.connect(self.parent.setTempValue)
-    def ShowDialog(self):
-        self.TouchKeyboard = TouchKeyboard(self)
-        self.TouchKeyboard.show()
-    def focusInEvent(self, event):
-        super(IntInputLine, self).focusInEvent(event)
-        self.ShowDialog()
-    def setValue(self, value):
-        self.setText(str(int(value)))
-    def getValue(self):
-        return int(self.text())
-    def sizeHint(self):
-        return QtCore.QSize(100,25)        
+           
 class FloatInputWidget(QtGui.QWidget):
     def __init__(self, parent, Label, CurrentText):
         super(FloatInputWidget, self).__init__()
