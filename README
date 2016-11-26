@@ -20,7 +20,6 @@ cd ./pi-blaster
 sudo ./configure
 sudo make install
 sudo pi-blaster
-
 sudo echo "@/home/pi/StartupScript.sh" >> /home/pi/.config/lxsession/LXDE-pi/autostart
 sudo touch /home/pi/StartupScript.sh
 sudo echo "python /usr/src/FanControl/main.py" >> /home/pi/StartupScript.sh
