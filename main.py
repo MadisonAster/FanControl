@@ -430,7 +430,7 @@ class ConfigHandler():
         self.CurrentConf = json.load(open(CurrentDirectory+'/'+'conf.json'))
         self.TempConf = copy.copy(self.CurrentConf)
     def LoadDefaultConfig(self):
-        self.DefaultConf = json.load(open('DefaultConf.json'))
+        self.DefaultConf = json.load(open(CurrentDirectory+'/'+'DefaultConf.json'))
     def ApplyDefaultConfig(self):
         self.CurrentConf = copy.copy(self.DefaultConf)
     def ApplyTempConfig(self):
