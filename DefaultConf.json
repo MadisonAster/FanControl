@@ -1,8 +1,8 @@
 {
-	"ShowMasterSlider": true,
-	"FanList1": "[10,3,5,7,9,11,13,15]",
-	"FanList2": "[17,19,21,23,25,27,26]",
-	"NumberOfSliderSteps": 10,
-	"WindowWidth": 800,
-	"WindowHeight": 450
+    "FanList1": "[10,3,5,7,9,11,13,15]",
+    "FanList2": "[17,19,21,23,25,27,26]",
+    "NumberOfSliderSteps": 10,
+    "ShowMasterSlider": true,
+    "WindowHeight": 450,
+    "WindowWidth": 800
 }

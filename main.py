@@ -35,6 +35,7 @@ class MainWindow(QtGui.QMainWindow):
         self.show()
 
     def ShowSettings(self):
+        self.SettingsWidget.setFocus()
         self.SettingsWidget.show()
     def dockThisWidget(self, widget, dockArea = QtCore.Qt.TopDockWidgetArea, noTitle = False):
         widgetName = widget.accessibleName()
@@ -105,24 +106,6 @@ class TextButton(QtGui.QPushButton):
     def sizeHint(self):
         return QtCore.QSize(54,54)
         
-class TextInputButton(QtGui.QPushButton):
-    #Input button that displays it's text, and calls a touch keyboard for input
-    def __init__(self, parent, CurrentText):
-        super(TextInputButton, self).__init__(CurrentText)
-        self.parent = parent
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
-        self.pressed.connect(self.ShowDialog)
-    def ShowDialog(self):
-        #self.parent.hide()
-        self.TouchKeyboard = TouchKeyboard(self)
-        self.TouchKeyboard.show()
-    def setValue(self, value):
-        self.setText(value)
-    def getValue(self):
-        return self.text()
-    def sizeHint(self):
-        return QtCore.QSize(200,25)
-
 class BoolInputWidget(QtGui.QWidget):
     def __init__(self, parent, Label, CurrentText):
         super(IntInputWidget, self).__init__()
@@ -368,10 +351,12 @@ class TouchKeyboard(QtGui.QWidget):
         self.resize(CONFIG.getValue('WindowWidth'), CONFIG.getValue('WindowHeight'))
     def Cancel(self):
         self.parent.clearFocus()
+        self.parent.parent.setFocus()
         self.close()
     def Apply(self):
         self.parent.setValue(self.TextPreview.toPlainText())
         self.parent.clearFocus()
+        self.parent.parent.setFocus()
         self.parent.editingFinished.emit()
         self.close()
     def Backspace(self):
@@ -432,7 +417,7 @@ class ConfigHandler():
     def getValue(self, key):
         return self.CurrentConf[key]
     def WriteConfig(self):
-        with open('newconf.json', 'w') as file:
+        with open('conf.json', 'w') as file:
             json.dump(self.CurrentConf, file, sort_keys=True, indent=4, separators=(',', ': '))
     def SaveSettings(self):
         self.ApplyTempConfig()
@@ -562,8 +547,6 @@ class TopPane(QtGui.QWidget):
         FanList2 = eval(CONFIG.getValue('FanList2'))
         self.FanWidgets = []
         
-        self.MasterSlider = VertSlider(0, 'master', self.SetSliders)
-        
         for a in FanList1:
             slider = VertSlider(a, str(a), self.EchoValue)
             self.SliderSet1.addWidget(slider)
@@ -579,7 +562,9 @@ class TopPane(QtGui.QWidget):
         self.Sliders.addLayout(self.SliderSet1)
         self.Sliders.addLayout(self.SliderSet2)
         self.Layout.addWidget(self.parent.EventControls)
-        self.Layout.addWidget(self.MasterSlider)
+        if CONFIG.getValue('ShowMasterSlider'):
+            self.MasterSlider = VertSlider(0, 'master', self.SetSliders)
+            self.Layout.addWidget(self.MasterSlider)
         self.Layout.addLayout(self.Sliders)
         
         self.setLayout(self.Layout)
@@ -629,10 +614,6 @@ class SettingsWidget(QtGui.QWidget):
         self.Layout.addLayout(self.ControlButtons)
         
         #########################################
-        
-        self.LoginButton = TextInputButton(self, 'Username')
-        self.PasswordButton = TextInputButton(self, 'Password')
-        
         self.BackButton = TextButton('Back')
         self.DefaultsButton = TextButton('Restore Defaults')
         self.ApplyButton = TextButton('Apply')
@@ -678,8 +659,9 @@ class SettingsWidget(QtGui.QWidget):
             value = self.config.CurrentConf[a]
             self.ConfigButtons[a].setValue(value)
     def setBool(self):
-        BoolState = self.sender().checkState()
+        BoolState = bool(self.sender().checkState())
         SentText = self.sender().text()
+        self.config.setValue(SentText, BoolState)
     def setTempValue(self, key, value):
         self.config.setValue(key, value)
     def Apply(self):    
