@@ -25,7 +25,6 @@ class MainWindow(QtGui.QMainWindow):
         self.CapturePictureArgs = None
         
         self.EventControls = EventControls(self)
-        self.ViewportPanel = ViewportPanel(self)
         self.RunControls = RunControls(self)
         self.TopPane = TopPane(self)
         
@@ -34,7 +33,7 @@ class MainWindow(QtGui.QMainWindow):
         self.dockThisWidget(self.TopPane, dockArea = QtCore.Qt.LeftDockWidgetArea, noTitle = True)
         #self.dockThisWidget(self.RunControls, dockArea = QtCore.Qt.BottomDockWidgetArea, noTitle = True)
         
-        self.resize(QtGui.QDesktopWidget().availableGeometry().width(), QtGui.QDesktopWidget().availableGeometry().height())
+        self.resize(WIDTH, HEIGHT)
         self.show()
 
     def ShowSettings(self):
@@ -369,7 +368,7 @@ class TouchKeyboard(QtGui.QWidget):
         self.setLayout(self.Layout)
         
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-        self.resize(QtGui.QDesktopWidget().availableGeometry().width(), QtGui.QDesktopWidget().availableGeometry().height())
+        self.resize(WIDTH, HEIGHT)
     def Cancel(self):
         self.parent.clearFocus()
         self.close()
@@ -449,6 +448,13 @@ class ConfigHandler():
         self.WriteConfig()
         
 
+class VertSlider(QtGui.QSlider):
+    def __init__(self):
+        super(VertSlider, self).__init__(QtCore.Qt.Vertical)
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+    def sizeHint(self):
+        return QtCore.QSize(50,300)
+        
 class ToolSpacer(QtGui.QWidget):
     #Purpose: Useful for spacing inside a QToolBar
     def __init__(self):
@@ -494,47 +500,12 @@ class VSpacer(QtGui.QWidget):
         self.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Expanding)
     def sizeHint(self):
         return QtCore.QSize(0,0)
-class EventScroller(QtGui.QScrollArea):
-    def __init__(self, parent):
-        super(EventScroller, self).__init__()
-        self.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum)
-        self.parent = parent
-        self.Layout = VLayout()
-        self.setLayout(self.Layout)
-        self.widgetList = []
-        self.removedList = []
-        #self.setNumber(self.parent.Layers)
-    def setNumber(self, number):
-        if number > len(self.widgetList):
-            for i in range(number-len(self.widgetList)):
-                self.addWidget()
-        elif number < len(self.widgetList):
-            for i in range(len(self.widgetList)-number):
-                self.removeWidget()
-    def addWidget(self):
-        if len(self.removedList) == 0:
-            #widget = EventWidget(self.parent,len(self.widgetList)+1)
-            pass
-        else:
-            widget = self.removedList.pop()
-            widget.show()
-        self.widgetList.append(widget)
-        self.Layout.addWidget(widget)
-    def removeWidget(self):
-        removedWidget = self.widgetList.pop()
-        self.removedList.append(removedWidget)
-        self.Layout.removeWidget(removedWidget)
-        removedWidget.hide()
-    def sizeHint(self):
-        return QtCore.QSize(0,260)
 class EventControls(QtGui.QWidget):
     def __init__(self, parent):
         super(EventControls, self).__init__()
         self.parent = parent
         self.Layout = QtGui.QVBoxLayout()
         self.Layout.setContentsMargins(0, 0, 0, 0)
-        self.Layers = EventScroller(self.parent)
-        self.Layout.addWidget(self.Layers)
         #self.Layout.addWidget(VSpacer())
         self.SettingsButton = TextButton('Settings')
         self.Layout.addWidget(self.SettingsButton)
@@ -551,22 +522,7 @@ class EventControls(QtGui.QWidget):
         return self.Layers.widgetList[item]
     def sizeHint(self):
         return QtCore.QSize(200,100)
-
-class ViewportPanel(QtGui.QWidget):
-    def __init__(self, parent):
-        super(ViewportPanel, self).__init__()
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        
-    def paintEvent(self, pEvent):
-        painter = QtGui.QPainter(self)
-        #DrawBG
-        self.widgetSize = self.size()
-        painter.setBrush(QtGui.QColor(0,0,0))
-        painter.drawRect(0, 0, self.widgetSize.width(), self.widgetSize.height())
-
-        #painter.drawImage(QtCore.QRect(0,0,self.frameCache.width(),self.frameCache.height()), self.frameCache)
-        painter.end()
-    
+ 
 class TopPane(QtGui.QWidget):
     def __init__(self, parent):
         super(TopPane, self).__init__()
@@ -576,7 +532,6 @@ class TopPane(QtGui.QWidget):
         self.Preview = QtGui.QVBoxLayout()
         self.Layout.addWidget(self.parent.EventControls)
         
-        self.Preview.addWidget(self.parent.ViewportPanel)
         self.Preview.addWidget(self.parent.RunControls)
         self.Layout.addLayout(self.Preview)
         
@@ -661,7 +616,7 @@ class SettingsWidget(QtGui.QWidget):
         self.setLayout(self.Layout)
         
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-        self.resize(QtGui.QDesktopWidget().availableGeometry().width(), QtGui.QDesktopWidget().availableGeometry().height())
+        self.resize(WIDTH, HEIGHT)
     def setValuesToCurrent(self):
         for a in self.config.CurrentConf:
             value = self.config.CurrentConf[a]
@@ -785,6 +740,12 @@ def main():
     
     mainAPP.setStyleSheet(generateStyleSheet(mainAPP))
     
+    global WIDTH, HEIGHT
+    WIDTH = QtGui.QDesktopWidget().availableGeometry().width()
+    HEIGHT = QtGui.QDesktopWidget().availableGeometry().height()
+    
+    WIDTH = 800
+    HEIGHT = 480
     
     global Icons
     import Icons
