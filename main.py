@@ -24,15 +24,14 @@ class MainWindow(QtGui.QMainWindow):
         self.CapturePictureArgs = None
         
         self.EventControls = EventControls(self)
-        self.RunControls = RunControls(self)
+        self.SettingsWidget = SettingsWidget(self)
+        self.config = self.SettingsWidget.config
         self.TopPane = TopPane(self)
         
-        self.SettingsWidget = SettingsWidget(self)
         
         self.dockThisWidget(self.TopPane, dockArea = QtCore.Qt.LeftDockWidgetArea, noTitle = True)
-        #self.dockThisWidget(self.RunControls, dockArea = QtCore.Qt.BottomDockWidgetArea, noTitle = True)
         
-        self.resize(WIDTH, HEIGHT)
+        self.resize(CONFIG.getValue('WindowWidth'), CONFIG.getValue('WindowHeight'))
         self.show()
 
     def ShowSettings(self):
@@ -85,7 +84,6 @@ class OkCancelDialog(QtGui.QMessageBox):
             return True
         else:
             return False
-        
         
 class IconButton(QtGui.QPushButton):
     #Purpose: Provides a stylized push button for a consistent look across aplication
@@ -367,7 +365,7 @@ class TouchKeyboard(QtGui.QWidget):
         self.setLayout(self.Layout)
         
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-        self.resize(WIDTH, HEIGHT)
+        self.resize(CONFIG.getValue('WindowWidth'), CONFIG.getValue('WindowHeight'))
     def Cancel(self):
         self.parent.clearFocus()
         self.close()
@@ -412,15 +410,7 @@ class TouchKeyboard(QtGui.QWidget):
         self.CursorPosition = self.TextPreview.textCursor().position()
     def sizeHint(self):
         return QtCore.QSize(800,600)
-        
-class ProgressBar(QtGui.QProgressBar):
-    #Purpose: Progress bar to indicate playback position
-    def __init__(self):
-        super(ProgBar, self).__init__()
-        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-    def sizeHint(self):
-        return QtCore.QSize(100,45)
-        
+
 class ConfigHandler():
     #Purpose: Saves/Loads json objects, and stores the current configuration
     def __init__(self):
@@ -439,6 +429,8 @@ class ConfigHandler():
         self.TempConf = copy.copy(self.TempConf)
     def setValue(self, key, value):
         self.TempConf[key] = value
+    def getValue(self, key):
+        return self.CurrentConf[key]
     def WriteConfig(self):
         with open('newconf.json', 'w') as file:
             json.dump(self.CurrentConf, file, sort_keys=True, indent=4, separators=(',', ': '))
@@ -450,7 +442,7 @@ class EchoSlider(QtGui.QSlider):
     def __init__(self, SliderNumber):
         super(EchoSlider, self).__init__(QtCore.Qt.Vertical)
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        self.setRange(0.0, 10)
+        self.setRange(0.0, CONFIG.getValue('NumberOfSliderSteps'))
         self.setSingleStep(1)
         self.setPageStep(1)
         
@@ -465,7 +457,7 @@ class VertSlider(QtGui.QWidget):
         self.Label = QtGui.QLabel(str(Label))
         self.Label.setIndent(35)
         self.EchoSlider = EchoSlider(SliderNumber)
-        self.EchoSlider.setSliderPosition(10)
+        self.EchoSlider.setSliderPosition(CONFIG.getValue('NumberOfSliderSteps'))
         
         self.Layout = QtGui.QStackedLayout()
         self.Layout.setStackingMode(QtGui.QStackedLayout.StackAll)
@@ -566,8 +558,8 @@ class TopPane(QtGui.QWidget):
         self.SliderSet1 = QtGui.QHBoxLayout()
         self.SliderSet2 = QtGui.QHBoxLayout()
         
-        FanList1 = [10,3,5,7,9,11,13,15]
-        FanList2 = [17,19,21,23,25,27,26]
+        FanList1 = eval(CONFIG.getValue('FanList1'))
+        FanList2 = eval(CONFIG.getValue('FanList2'))
         self.FanWidgets = []
         
         self.MasterSlider = VertSlider(0, 'master', self.SetSliders)
@@ -595,7 +587,7 @@ class TopPane(QtGui.QWidget):
         for slider in self.FanWidgets:
             slider.setSliderPosition(self.MasterSlider.sliderPosition())
     def EchoValue(self):
-        value = 1.0-(self.sender().sliderPosition()/10.0)
+        value = 1.0-(self.sender().sliderPosition()/float(self.parent.config.getValue('NumberOfSliderSteps')))
         pin = self.sender().SliderNumber
         cmd = 'echo "'+str(pin)+'='+str(value)+'" > /dev/pi-blaster'
         os.system(cmd)
@@ -622,6 +614,8 @@ class SettingsWidget(QtGui.QWidget):
         super(SettingsWidget, self).__init__()
         self.parent = parent
         self.config = ConfigHandler()
+        global CONFIG
+        CONFIG = self.config
         
         self.Layout = QtGui.QVBoxLayout()
         self.SettingsColumns = QtGui.QHBoxLayout()
@@ -678,7 +672,7 @@ class SettingsWidget(QtGui.QWidget):
         self.setLayout(self.Layout)
         
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-        self.resize(WIDTH, HEIGHT)
+        self.resize(CONFIG.getValue('WindowWidth'), CONFIG.getValue('WindowHeight'))
     def setValuesToCurrent(self):
         for a in self.config.CurrentConf:
             value = self.config.CurrentConf[a]
@@ -699,44 +693,6 @@ class SettingsWidget(QtGui.QWidget):
         self.setValuesToCurrent()
         self.hide()
     
-class RunControls(QtGui.QToolBar):
-    def __init__(self, parent):
-        super(RunControls, self).__init__()
-        self.parent = parent
-        self.setIconSize(QtCore.QSize(45, 45))
-        
-        self.addWidget(ToolSpacer())
-        
-        RunBackward = QtGui.QAction(Icons.RPlay, 'RunBackward', self)
-        #RunBackward.triggered.connect(self.parent.ThreadRunBackward)
-        self.addAction(RunBackward)
-        
-        self.addWidget(ToolSpacer())
-        
-        StepBackward = QtGui.QAction(Icons.RAdvance, 'StepBackward', self)
-        #StepBackward.triggered.connect(self.parent.StepBackward)
-        self.addAction(StepBackward)
-        
-        self.addWidget(ToolSpacer())
-        
-        StopRunning = QtGui.QAction(Icons.Stop, 'StopRunning', self)
-        #StopRunning.triggered.connect(self.parent.StopRunning)
-        self.addAction(StopRunning)
-        
-        self.addWidget(ToolSpacer())
-        
-        StepForward = QtGui.QAction(Icons.Advance, 'StepForward', self)
-        #StepForward.triggered.connect(self.parent.StepForwardCmd)
-        self.addAction(StepForward)
-        
-        self.addWidget(ToolSpacer())
-        
-        RunForward = QtGui.QAction(Icons.Play, 'RunForward', self)
-        #RunForward.triggered.connect(self.parent.ThreadRunForward)
-        self.addAction(RunForward)
-        
-        self.addWidget(ToolSpacer())
-
 def generateStyleSheet(App):
         palette = App.palette()
         Window = palette.window().color().name()
@@ -801,14 +757,7 @@ def main():
     mainAPP.setPalette(palette)
     
     mainAPP.setStyleSheet(generateStyleSheet(mainAPP))
-    
-    global WIDTH, HEIGHT
-    WIDTH = QtGui.QDesktopWidget().availableGeometry().width()
-    HEIGHT = QtGui.QDesktopWidget().availableGeometry().height()
-    
-    WIDTH = 800
-    HEIGHT = 450
-    
+        
     global Icons
     import Icons
     
