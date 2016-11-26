@@ -427,7 +427,7 @@ class ConfigHandler():
         self.LoadConfig()
         self.LoadDefaultConfig()
     def LoadConfig(self):
-        self.CurrentConf = json.load(open('Conf.json'))
+        self.CurrentConf = json.load(open(CurrentDirectory+'/conf.json'))
         self.TempConf = copy.copy(self.CurrentConf)
     def LoadDefaultConfig(self):
         self.DefaultConf = json.load(open('DefaultConf.json'))
