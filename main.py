@@ -4,7 +4,7 @@ import subprocess, json, copy
 from pprint import pprint
 
 from PySide import QtGui, QtCore
-from RPi import GPIO
+#from RPi import GPIO
 
     
 class MainWindow(QtGui.QMainWindow):
