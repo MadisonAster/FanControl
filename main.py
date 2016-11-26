@@ -1,10 +1,9 @@
 import sys, os, time, traceback, datetime, pprint
 import logging, threading, multiprocessing
-import subprocess, json, copy
+import json, copy
 from pprint import pprint
 
 from PySide import QtGui, QtCore
-#from RPi import GPIO
 
     
 class MainWindow(QtGui.QMainWindow):
@@ -14,7 +13,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setDockOptions(False)
         self.setDockNestingEnabled(True)
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-        self.setWindowTitle('Security Camera')
+        self.setWindowTitle('FanControl')
         self.Exit = False
         
         self.StopHit = False
@@ -595,11 +594,10 @@ class TopPane(QtGui.QWidget):
         for slider in self.FanWidgets:
             slider.setSliderPosition(self.MasterSlider.sliderPosition())
     def EchoValue(self):
-        value = self.sender().sliderPosition()/10.0
+        value = 1.0-(self.sender().sliderPosition()/10.0)
         pin = self.sender().SliderNumber
         cmd = 'echo "'+str(pin)+'='+str(value)+'" > /dev/pi-blaster'
-        subprocess.call(cmd)
-        #print cmd
+        os.system(cmd)
 class CheckboxKnob(QtGui.QCheckBox):
     def __init__(self, labelText):
         super(CheckboxKnob, self).__init__(labelText)
@@ -808,7 +806,7 @@ def main():
     HEIGHT = QtGui.QDesktopWidget().availableGeometry().height()
     
     WIDTH = 800
-    HEIGHT = 480
+    HEIGHT = 450
     
     global Icons
     import Icons
