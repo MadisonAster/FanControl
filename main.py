@@ -465,6 +465,7 @@ class VertSlider(QtGui.QWidget):
         self.Label = QtGui.QLabel(str(Label))
         self.Label.setIndent(35)
         self.EchoSlider = EchoSlider(SliderNumber)
+        self.EchoSlider.setSliderPosition(10)
         
         self.Layout = QtGui.QStackedLayout()
         self.Layout.setStackingMode(QtGui.QStackedLayout.StackAll)
