@@ -671,7 +671,7 @@ def generateStyleSheet(App):
         stylesheet += 'QMenuBar::item {background: '+Window+';}\n'
         stylesheet += 'QMenu {background: '+Window+'; color: '+WindowText+';}\n'
         
-        stylesheet += 'QSlider::handle:vertical {background-image: url(SliderButton.png); height: 50px; margin: 0 -15px;}\n'
+        stylesheet += 'QSlider::handle:vertical {background-image: url('+CurrentDirectory+'/SliderButton.png); height: 50px; margin: 0 -15px;}\n'
         stylesheet += 'QSlider::groove:vertical {width: 4px; background: black; margin: 0 -2px;}\n'
         
         
