@@ -23,7 +23,7 @@ Simply download [setup.sh](https://raw.githubusercontent.com/ThomasMcVay/FanCont
 
     sudo bash setup.sh
     
-This script assumes only that you have installed the full version of raspbian, if git is missing it will install it.
+This script assumes only that you have installed the full version of raspbian, if git is missing it will install it. If you are using this software on an existing raspbian installation, you may want to run the commands in setup.sh individually to ensure the libraries that are installed don't conflict with your existing software.
     
 this will clone the necessary repositories into /home/pi/FanControl, install qt, pyside, and my fork of pi-blaster. It will also create a shell script at /home/pi/StartupScript.sh that will run the program on start
 

@@ -1,15 +1,15 @@
-apt-get update
-apt-get install build-essential
-apt-get install git
-apt-get install cmake
-apt-get install libqt4-dev
-apt-get install libphonon-dev
-apt-get install python2.7-dev
-apt-get install libxml2-dev
-apt-get install libxslt1-dev
-apt-get install qtmobility-dev
-apt-get install libqtwebkit-dev
-apt-get install qt4-dev-tools
+apt-get -y update
+apt-get -y install build-essential
+apt-get -y install git
+apt-get -y install cmake
+apt-get -y install libqt4-dev
+apt-get -y install libphonon-dev
+apt-get -y install python2.7-dev
+apt-get -y install libxml2-dev
+apt-get -y install libxslt1-dev
+apt-get -y install qtmobility-dev
+apt-get -y install libqtwebkit-dev
+apt-get -y install qt4-dev-tools
 pip install -U PySide
 cd /home/pi
 git clone https://github.com/ThomasMcVay/FanControl.git
