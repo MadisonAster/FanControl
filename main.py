@@ -671,6 +671,8 @@ def generateStyleSheet(App):
         stylesheet += 'QMenuBar::item {background: '+Window+';}\n'
         stylesheet += 'QMenu {background: '+Window+'; color: '+WindowText+';}\n'
         
+        stylesheet += 'QSlider::handle:vertical {height: 10px; margin: 0 -4px;}\n'
+        
         stylesheet += 'QScrollBar:vertical {background: '+Window+'; border: 1px inset;}\n'
         stylesheet += 'QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: none;}\n'
         stylesheet += 'QScrollBar::handle:vertical {background: '+Button+'; margin: 24px 0 24px 0;}\n'
