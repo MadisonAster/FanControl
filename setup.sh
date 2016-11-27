@@ -23,6 +23,6 @@ make install
 pi-blaster
 echo "@/home/pi/StartupScript.sh" >> /home/pi/.config/lxsession/LXDE-pi/autostart
 touch /home/pi/StartupScript.sh
-echo "python /usr/src/FanControl/main.py" >> /home/pi/StartupScript.sh
+echo "python /home/pi/FanControl/main.py" >> /home/pi/StartupScript.sh
 chmod 777 /home/pi/StartupScript.sh
 echo "SETUP COMPLETE!"
