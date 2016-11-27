@@ -19,9 +19,11 @@ and I connected the individual signal inputs using an array of optocouplers I bu
 
 ### Raspbian Installation
 
-Simply download [setup.sh](https://github.com/ThomasMcVay/FanControl/blob/master/setup.sh) and run it like so:
+Simply download [setup.sh](https://raw.githubusercontent.com/ThomasMcVay/FanControl/master/setup.sh) and run it like so:
 
     sudo setup.sh
+    
+This script assumes only that you have installed the full version of raspbian, if git is missing it will install it.
     
 this will clone the necessary repositories into /home/pi/FanControl, install qt, pyside, and my fork of pi-blaster. It will also create a shell script at /home/pi/StartupScript.sh that will run the program on start
 
