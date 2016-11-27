@@ -671,9 +671,8 @@ def generateStyleSheet(App):
         stylesheet += 'QMenuBar::item {background: '+Window+';}\n'
         stylesheet += 'QMenu {background: '+Window+'; color: '+WindowText+';}\n'
         
-        #stylesheet += 'QSlider:vertical {min-height: 32px; min-width: 32px;}\n'
-        stylesheet += 'QSlider::handle:vertical {background: orange; border: 1px solid gray; height: 50px; margin: 0 -24px; border-radius: 25px;}\n'
-        stylesheet += 'QSlider::groove:vertical {border: 10px solid #AAA; width: 8px; background: #9AD9EB; margin: 0 2px;}\n'
+        stylesheet += 'QSlider::handle:vertical {background: white; border: 2px solid gray; height: 50px; margin: 0 -16px;}\n'
+        stylesheet += 'QSlider::groove:vertical {width: 4px; background: black; margin: 0 -2px;}\n'
         
         
         #stylesheet += 'QSlider::add-page:vertical {background: white;}\n'
