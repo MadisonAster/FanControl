@@ -17,33 +17,10 @@ and I connected the individual signal inputs using an array of optocouplers I bu
 ![KeyboardScreen](KeyboardScreen.png)
 
 
-### Installation
+### Raspbian Installation
 
-sudo apt-get update
-sudo apt-get install build-essential
-sudo apt-get install git
-sudo apt-get install cmake
-sudo apt-get install libqt4-dev
-sudo apt-get install libphonon-dev
-sudo apt-get install python2.7-dev
-sudo apt-get install libxml2-dev
-sudo apt-get install libxslt1-dev
-sudo apt-get install qtmobility-dev
-sudo apt-get install libqtwebkit-dev
-sudo apt-get install qt4-dev-tools
-sudo pip install -U PySide
-cd /home/pi
-git clone https://github.com/ThomasMcVay/FanControl.git
-cd ./FanControl
-git submodule init
-git submodule update
-cd ./pi-blaster
-./autogen.sh
-./configure
-sudo make install
+simply download and run
 
-sudo pi-blaster
-sudo echo "@/home/pi/StartupScript.sh" >> /home/pi/.config/lxsession/LXDE-pi/autostart
-sudo touch /home/pi/StartupScript.sh
-sudo echo "python /usr/src/FanControl/main.py" >> /home/pi/StartupScript.sh
-sudo chmod 777 /home/pi/StartupScript.sh
+    sudo setup.sh
+    
+this will install the qt library, pyside, and my fork of pi-blaster. It will also create a shell script at /home/pi/StartupScript.sh that will run the program on start
