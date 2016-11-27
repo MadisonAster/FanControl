@@ -415,7 +415,7 @@ class VertSlider(QtGui.QWidget):
         
         self.EchoSlider.sliderMoved.connect(action)
     def sizeHint(self):
-        return QtCore.QSize(50,300)
+        return QtCore.QSize(60,300)
     def setRepeatAction(self, *args):
         return self.EchoSlider.setRepeatAction(*args)
     def setSliderPosition(self, *args):
@@ -523,7 +523,7 @@ class TopPane(QtGui.QWidget):
         self.Sliders.addLayout(self.SliderSet2)
         self.Layout.addWidget(self.parent.EventControls)
         if CONFIG.getValue('ShowMasterSlider'):
-            self.MasterSlider = VertSlider(0, 'master', self.SetSliders)
+            self.MasterSlider = VertSlider(0, 'M', self.SetSliders)
             self.Layout.addWidget(self.MasterSlider)
         self.Layout.addLayout(self.Sliders)
         
