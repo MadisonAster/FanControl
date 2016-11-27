@@ -21,7 +21,7 @@ and I connected the individual signal inputs using an array of optocouplers I bu
 
 Simply download [setup.sh](https://raw.githubusercontent.com/ThomasMcVay/FanControl/master/setup.sh) and run it like so:
 
-    sudo setup.sh
+    sudo bash setup.sh
     
 This script assumes only that you have installed the full version of raspbian, if git is missing it will install it.
     
