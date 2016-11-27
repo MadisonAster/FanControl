@@ -413,13 +413,11 @@ class VertSlider(QtGui.QWidget):
         
         self.setLayout(self.Layout)
         
-        self.EchoSlider.valueChanged.connect(action)
+        self.EchoSlider.sliderMoved.connect(action)
     def sizeHint(self):
         return QtCore.QSize(50,300)
     def setRepeatAction(self, *args):
         return self.EchoSlider.setRepeatAction(*args)
-    def setSliderPosition(self, *args):
-        return self.EchoSlider.setSliderPosition(*args)
     def setSliderPosition(self, *args):
         return self.EchoSlider.setSliderPosition(*args)
     def sliderPosition(self):
@@ -533,6 +531,9 @@ class TopPane(QtGui.QWidget):
     def SetSliders(self):
         for slider in self.FanWidgets:
             slider.setSliderPosition(self.MasterSlider.sliderPosition())
+        value = 1.0-(self.sender().sliderPosition()/float(self.parent.config.getValue('NumberOfSliderSteps')))
+        cmd = 'echo "*='+str(value)+'" > /dev/pi-blaster'
+        os.system(cmd)
     def EchoValue(self):
         value = 1.0-(self.sender().sliderPosition()/float(self.parent.config.getValue('NumberOfSliderSteps')))
         pin = self.sender().SliderNumber
