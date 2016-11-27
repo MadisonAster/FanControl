@@ -694,6 +694,18 @@ def generateStyleSheet(App):
 def main():
     global mainAPP
     mainAPP = QtGui.QApplication(sys.argv)
+    
+    global Icons
+    import Icons
+    
+    global CurrentDirectory
+    CurrentDirectory = __file__.replace('\\','/')
+    if '/' in CurrentDirectory:
+        CurrentDirectory = CurrentDirectory.rsplit('/',1)[0]
+    else:
+        CurrentDirectory = './'
+        
+    
     palette = mainAPP.palette()
     palette.setColor(QtGui.QPalette.Button, QtGui.QColor(30,30,30))
     palette.setColor(QtGui.QPalette.Shadow, QtGui.QColor(0,0,0))
@@ -709,16 +721,6 @@ def main():
     mainAPP.setPalette(palette)
     
     mainAPP.setStyleSheet(generateStyleSheet(mainAPP))
-        
-    global Icons
-    import Icons
-    
-    global CurrentDirectory
-    CurrentDirectory = __file__.replace('\\','/')
-    if '/' in CurrentDirectory:
-        CurrentDirectory = CurrentDirectory.rsplit('/',1)[0]
-    else:
-        CurrentDirectory = './'
     
     Window = MainWindow()
     sys.exit(mainAPP.exec_())
