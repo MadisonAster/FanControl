@@ -24,31 +24,31 @@ and I connected the individual signal inputs using an array of optocouplers I bu
 
 Here's the final hardware list I used for my installation:
 
-    The Board:
-    [RPi Proto Breadboard PCB Kit](https://www.amazon.com/gp/product/B00WNRYDWE/ref=oh_aui_detailpage_o09_s00?ie=UTF8&psc=1)
-    [IDC Ribbon cable](https://www.amazon.com/gp/product/B00XXGOHZW/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1)
-    [OptoCouplers](https://www.amazon.com/gp/product/B01GYH74O2/ref=oh_aui_detailpage_o00_s03?ie=UTF8&psc=1)
-    [IC Sockets](https://www.amazon.com/gp/product/B01GYLWL6E/ref=oh_aui_detailpage_o00_s02?ie=UTF8&psc=1)
-    [Terminal Connectors](https://www.amazon.com/gp/product/B01F7KOM10/ref=oh_aui_detailpage_o00_s01?ie=UTF8&psc=1)
+The Board:
+[RPi Proto Breadboard PCB Kit](https://www.amazon.com/gp/product/B00WNRYDWE/ref=oh_aui_detailpage_o09_s00?ie=UTF8&psc=1)
+[IDC Ribbon cable](https://www.amazon.com/gp/product/B00XXGOHZW/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1)
+[OptoCouplers](https://www.amazon.com/gp/product/B01GYH74O2/ref=oh_aui_detailpage_o00_s03?ie=UTF8&psc=1)
+[IC Sockets](https://www.amazon.com/gp/product/B01GYLWL6E/ref=oh_aui_detailpage_o00_s02?ie=UTF8&psc=1)
+[Terminal Connectors](https://www.amazon.com/gp/product/B01F7KOM10/ref=oh_aui_detailpage_o00_s01?ie=UTF8&psc=1)
+ 
+Pi:
+[Raspberry Pi 3](https://www.amazon.com/gp/product/B01CD5VC92/ref=oh_aui_detailpage_o03_s01?ie=UTF8&psc=1)
+[Official Touch Display](https://www.amazon.com/gp/product/B0153R2A9I/ref=oh_aui_detailpage_o00_s03?ie=UTF8&psc=1)
+[SmartiPi touch case](https://www.amazon.com/gp/product/B01HV97F64/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1)
+[Power Supply w On/Off usb cable](https://www.amazon.com/Gowoops-Adapter-Charger-Heatsinks-Raspberry/dp/B01FM0XOH8/ref=sr_1_23?s=pc&ie=UTF8&qid=1480290599&sr=1-23)
+[Testing Keyboard](https://www.amazon.com/Rii-Stainless-Wireless-Rechargable-Raspberry/dp/B00ESUXXZM/ref=sr_1_3?s=pc&ie=UTF8&qid=1480290701&sr=1-3&keywords=rii+keyboard)
+
+Fans:
+[Coolermaster 120](https://www.amazon.com/gp/product/B0030DL37I/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1)
+[4 Pin Extensions](https://www.amazon.com/gp/product/B004PBMPZS/ref=oh_aui_detailpage_o05_s00?ie=UTF8&psc=1)
+[12v power supply](https://www.amazon.com/LEDwholesalers-Power-Adapter-5-5x2-1mm-3228-12V/dp/B003WJ218U/ref=sr_1_11?s=pc&ie=UTF8&qid=1480290530&sr=1-11&keywords=12v+power+supply)
     
-    Pi:
-    [Raspberry Pi 3](https://www.amazon.com/gp/product/B01CD5VC92/ref=oh_aui_detailpage_o03_s01?ie=UTF8&psc=1)
-    [Official Touch Display](https://www.amazon.com/gp/product/B0153R2A9I/ref=oh_aui_detailpage_o00_s03?ie=UTF8&psc=1)
-    [SmartiPi touch case](https://www.amazon.com/gp/product/B01HV97F64/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1)
-    [Power Supply w On/Off usb cable](https://www.amazon.com/Gowoops-Adapter-Charger-Heatsinks-Raspberry/dp/B01FM0XOH8/ref=sr_1_23?s=pc&ie=UTF8&qid=1480290599&sr=1-23)
-    [Testing Keyboard](https://www.amazon.com/Rii-Stainless-Wireless-Rechargable-Raspberry/dp/B00ESUXXZM/ref=sr_1_3?s=pc&ie=UTF8&qid=1480290701&sr=1-3&keywords=rii+keyboard)
-    
-    Fans:
-    [Coolermaster 120](https://www.amazon.com/gp/product/B0030DL37I/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1)
-    [4 Pin Extensions](https://www.amazon.com/gp/product/B004PBMPZS/ref=oh_aui_detailpage_o05_s00?ie=UTF8&psc=1)
-    [12v power supply](https://www.amazon.com/LEDwholesalers-Power-Adapter-5-5x2-1mm-3228-12V/dp/B003WJ218U/ref=sr_1_11?s=pc&ie=UTF8&qid=1480290530&sr=1-11&keywords=12v+power+supply)
-    
-    Ducting:
-    [Big Gulp Dust collector](https://www.amazon.com/gp/product/B00139DYU0/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
-    [4 inch hose](https://www.amazon.com/gp/product/B005W17RD0/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
-    [4 inch flange](https://www.amazon.com/gp/product/B00DJBXP5E/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
-    [4 wall cap](https://www.amazon.com/gp/product/B0085KZOA8/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
-    [4 inch hose clamp](https://www.amazon.com/gp/product/B001DDY6HG/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
+Ducting:
+[Big Gulp Dust collector](https://www.amazon.com/gp/product/B00139DYU0/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
+[4 inch hose](https://www.amazon.com/gp/product/B005W17RD0/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
+[4 inch flange](https://www.amazon.com/gp/product/B00DJBXP5E/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
+[4 inch wall cap](https://www.amazon.com/gp/product/B0085KZOA8/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
+[4 inch hose clamp](https://www.amazon.com/gp/product/B001DDY6HG/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
 
 ### A note about pwm fan wiring
 
@@ -61,10 +61,10 @@ Because of this behavior, the floating point numbers that the sliders in my soft
 
 I ended up trying out a number of different fan brands during this process, and the electronic implementation of pwm on various fans appears to vary widely. 
 
-    Arctic F12 - output 8v on pwm pin - don't go to low speed when connected to ground
-    Noctua Fan F12 pro - output 1.8v on pwm pin - turns completely off when connected to ground
-    Coolermaster 120 - output 2.2v on pwm pin - goes to low speed when connected to ground
-    Enermax PWM - output 1.3v on pwm pin - goes to low speed when connected to ground
+    Arctic F12 - output 8v on pwm pin - does nothing when connected to ground
+    Noctua Fan F12 pro - output 1.8v on pwm pin - completely off when connected to ground
+    Coolermaster 120 - output 2.2v on pwm pin - low speed when connected to ground
+    Enermax PWM - output 1.3v on pwm pin - low speed when connected to ground
 
 From this I can only deduce that the Arctic fans, Noctua fans, and presumably many other brands are not implemented to spec. If anyone has a better explanation about what I've seen here, or can tell me if I've done something wrong, please let me know. I think that I'm right however, because there's very little information about these things available on the web, leading me to believe that this issue has simply been overlooked.
 
