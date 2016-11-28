@@ -8,12 +8,13 @@ and I connected the individual signal inputs using an array of optocouplers I bu
 
 ##Interface
 <p align="left">
-  <img src="MainScreen.png" width="450"/>
-  <img src="SettingsScreen.png" width="450"/>
-  <img src="KeyboardScreen.png" width="450"/>
+  <img src="MainScreen.png" width="400"/>
+  <img src="SettingsScreen.png" width="400"/>
+  <img src="KeyboardScreen.png" width="400"/>
 </p>
 
 ##Final Installation
+I think it looks pretty clean
 <p align="left">
   <img src="FanInstallation.jpg" width="250"/>
   <img src="ServerRack.jpg" width="250"/>
