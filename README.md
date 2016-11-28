@@ -24,17 +24,17 @@ I think it looks pretty clean
 
 Here's the final hardware list I used for my installation:
 
-###The Board:           ###Pi:
+###The Board:
 
-[RPi Proto Breadboard PCB Kit](https://www.amazon.com/gp/product/B00WNRYDWE/ref=oh_aui_detailpage_o09_s00?ie=UTF8&psc=1)            [Raspberry Pi 3](https://www.amazon.com/gp/product/B01CD5VC92/ref=oh_aui_detailpage_o03_s01?ie=UTF8&psc=1)
+[RPi Proto Breadboard PCB Kit](https://www.amazon.com/gp/product/B00WNRYDWE/ref=oh_aui_detailpage_o09_s00?ie=UTF8&psc=1)
 
-[IDC Ribbon cable](https://www.amazon.com/gp/product/B00XXGOHZW/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1)            [Official Touch Display](https://www.amazon.com/gp/product/B0153R2A9I/ref=oh_aui_detailpage_o00_s03?ie=UTF8&psc=1)
+[IDC Ribbon cable](https://www.amazon.com/gp/product/B00XXGOHZW/ref=oh_aui_detailpage_o01_s00?ie=UTF8&psc=1)
 
-[OptoCouplers](https://www.amazon.com/gp/product/B01GYH74O2/ref=oh_aui_detailpage_o00_s03?ie=UTF8&psc=1)            [SmartiPi touch case](https://www.amazon.com/gp/product/B01HV97F64/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1)
+[OptoCouplers](https://www.amazon.com/gp/product/B01GYH74O2/ref=oh_aui_detailpage_o00_s03?ie=UTF8&psc=1)
 
-[IC Sockets](https://www.amazon.com/gp/product/B01GYLWL6E/ref=oh_aui_detailpage_o00_s02?ie=UTF8&psc=1)          [Power Supply w On/Off usb cable](https://www.amazon.com/Gowoops-Adapter-Charger-Heatsinks-Raspberry/dp/B01FM0XOH8/ref=sr_1_23?s=pc&ie=UTF8&qid=1480290599&sr=1-23)
+[IC Sockets](https://www.amazon.com/gp/product/B01GYLWL6E/ref=oh_aui_detailpage_o00_s02?ie=UTF8&psc=1)
 
-[Terminal Connectors](https://www.amazon.com/gp/product/B01F7KOM10/ref=oh_aui_detailpage_o00_s01?ie=UTF8&psc=1)         [Testing Keyboard](https://www.amazon.com/Rii-Stainless-Wireless-Rechargable-Raspberry/dp/B00ESUXXZM/ref=sr_1_3?s=pc&ie=UTF8&qid=1480290701&sr=1-3&keywords=rii+keyboard)
+[Terminal Connectors](https://www.amazon.com/gp/product/B01F7KOM10/ref=oh_aui_detailpage_o00_s01?ie=UTF8&psc=1)
  
 ###Pi:
 
