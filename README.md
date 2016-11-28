@@ -17,7 +17,10 @@ and I connected the individual signal inputs using an array of optocouplers I bu
 ![KeyboardScreen](KeyboardScreen.png)
 
 ##Final Installation
-![FanInstallation](FanInstallation.jpg) ![ServerRack](ServerRack.jpg)
+<p align="center">
+  <img src="FanInstallation.jpg" width="50"/>
+  <img src="ServerRack.jpg" width="50"/>
+</p>
 
 #Hardware List
 
@@ -51,6 +54,8 @@ Here's the final hardware list I used for my installation:
 
 [Coolermaster 120](https://www.amazon.com/gp/product/B0030DL37I/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1)
 
+[Coolermaster 80](https://www.amazon.com/gp/product/B0030DSECK/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
+
 [4 Pin Extensions](https://www.amazon.com/gp/product/B004PBMPZS/ref=oh_aui_detailpage_o05_s00?ie=UTF8&psc=1)
 
 [12v power supply](https://www.amazon.com/LEDwholesalers-Power-Adapter-5-5x2-1mm-3228-12V/dp/B003WJ218U/ref=sr_1_11?s=pc&ie=UTF8&qid=1480290530&sr=1-11&keywords=12v+power+supply)
@@ -66,6 +71,8 @@ Here's the final hardware list I used for my installation:
 [4 inch wall cap](https://www.amazon.com/gp/product/B0085KZOA8/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
 
 [4 inch hose clamp](https://www.amazon.com/gp/product/B001DDY6HG/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
+
+[Filter Material](https://www.amazon.com/gp/product/B00LU28PRW/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
 
 #About pwm fan wiring
 
