@@ -1,5 +1,6 @@
 apt-get -y update
 apt-get -y install build-essential
+apt-get -y install dh-autoreconf
 apt-get -y install git
 apt-get -y install cmake
 apt-get -y install libqt4-dev
@@ -26,3 +27,4 @@ touch /home/pi/StartupScript.sh
 echo "python /home/pi/FanControl/main.py" >> /home/pi/StartupScript.sh
 chmod 777 /home/pi/StartupScript.sh
 echo "SETUP COMPLETE!"
+python /home/pi/FanControl/main.py
