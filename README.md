@@ -16,9 +16,8 @@ and I connected the individual signal inputs using an array of optocouplers I bu
 ##Touch Keyboard
 ![KeyboardScreen](KeyboardScreen.png)
 
-##FinalInstallation
-![FanInstallation](FanInstallation.jpg)
-![ServerRack](ServerRack.jpg)
+##Final Installation
+![FanInstallation](FanInstallation.jpg) ![ServerRack](ServerRack.jpg)
 
 #Hardware List
 
