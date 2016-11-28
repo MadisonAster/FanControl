@@ -1,4 +1,4 @@
-### Purpose
+#Purpose
 
 A pwm control software for use with the 7inch official raspberry pi touch screen.
 I put this together to control the speed of the fans in my server rack. The fans are on a 12v supply,
@@ -7,24 +7,24 @@ and I connected the individual signal inputs using an array of optocouplers I bu
 
 
 
-### Main Screen
+##Main Screen
 ![MainScreen](MainScreen.png)
 
-### Settings Screen
+##Settings Screen
 ![SettingsScreen](SettingsScreen.png)
 
-### Touch Keyboard
+##Touch Keyboard
 ![KeyboardScreen](KeyboardScreen.png)
 
-### FinalInstallation
+##FinalInstallation
 ![FanInstallation](FanInstallation.jpg)
 ![ServerRack](ServerRack.jpg)
 
-### Hardware List
+#Hardware List
 
 Here's the final hardware list I used for my installation:
 
-#The Board:
+###The Board:
 
 [RPi Proto Breadboard PCB Kit](https://www.amazon.com/gp/product/B00WNRYDWE/ref=oh_aui_detailpage_o09_s00?ie=UTF8&psc=1)
 
@@ -36,7 +36,7 @@ Here's the final hardware list I used for my installation:
 
 [Terminal Connectors](https://www.amazon.com/gp/product/B01F7KOM10/ref=oh_aui_detailpage_o00_s01?ie=UTF8&psc=1)
  
-#Pi:
+###Pi:
 
 [Raspberry Pi 3](https://www.amazon.com/gp/product/B01CD5VC92/ref=oh_aui_detailpage_o03_s01?ie=UTF8&psc=1)
 
@@ -48,7 +48,7 @@ Here's the final hardware list I used for my installation:
 
 [Testing Keyboard](https://www.amazon.com/Rii-Stainless-Wireless-Rechargable-Raspberry/dp/B00ESUXXZM/ref=sr_1_3?s=pc&ie=UTF8&qid=1480290701&sr=1-3&keywords=rii+keyboard)
 
-#Fans:
+###Fans:
 
 [Coolermaster 120](https://www.amazon.com/gp/product/B0030DL37I/ref=oh_aui_detailpage_o00_s00?ie=UTF8&psc=1)
 
@@ -56,7 +56,7 @@ Here's the final hardware list I used for my installation:
 
 [12v power supply](https://www.amazon.com/LEDwholesalers-Power-Adapter-5-5x2-1mm-3228-12V/dp/B003WJ218U/ref=sr_1_11?s=pc&ie=UTF8&qid=1480290530&sr=1-11&keywords=12v+power+supply)
     
-#Ducting:
+###Ducting:
 
 [Big Gulp Dust collector](https://www.amazon.com/gp/product/B00139DYU0/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
 
@@ -68,7 +68,7 @@ Here's the final hardware list I used for my installation:
 
 [4 inch hose clamp](https://www.amazon.com/gp/product/B001DDY6HG/ref=oh_aui_search_detailpage?ie=UTF8&psc=1)
 
-### A note about pwm fan wiring
+#About pwm fan wiring
 
 From everything that I've deduced in my testing, pwm fans are supposed to go to full speed with just a 12v connection, output a low voltage on the pwm pin, and go to their lowest speed when you ground the pwm pin. Now this runs contrary to the intel specification, and all the documentation I've found about pwm fans. All documentation that I can find talks about SUPPLYING a pulse, but even if you supply a pulse at a higher voltage than the pwm pin is outputting, it doesn't act as if it's receiving a pulse.
 
@@ -86,7 +86,7 @@ I ended up trying out a number of different fan brands during this process, and 
 
 From this I can only deduce that the Arctic fans, Noctua fans, and presumably many other brands are not implemented to spec. If anyone has a better explanation about what I've seen here, or can tell me if I've done something wrong, please let me know. I think that I'm right however, because there's very little information about these things available on the web, leading me to believe that this issue has simply been overlooked.
 
-### Raspbian Installation
+#Raspbian Installation
 
 Simply download [setup.sh](https://raw.githubusercontent.com/ThomasMcVay/FanControl/master/setup.sh) and run it like so:
 
