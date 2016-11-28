@@ -6,20 +6,17 @@ and I connected the individual signal inputs using an array of optocouplers I bu
 ![OptocouplerArray](OptocouplerArray.jpg)
 
 
-
-##Main Screen
-![MainScreen](MainScreen.png)
-
-##Settings Screen
-![SettingsScreen](SettingsScreen.png)
-
-##Touch Keyboard
-![KeyboardScreen](KeyboardScreen.png)
+##Interface
+<p align="left">
+  <img src="MainScreen.jpg" width="500"/>
+  <img src="SettingsScreen.jpg" width="500"/>
+  <img src="KeyboardScreen.jpg" width="500"/>
+</p>
 
 ##Final Installation
-<p align="center">
-  <img src="FanInstallation.jpg" width="50"/>
-  <img src="ServerRack.jpg" width="50"/>
+<p align="left">
+  <img src="FanInstallation.jpg" width="250"/>
+  <img src="ServerRack.jpg" width="250"/>
 </p>
 
 #Hardware List
