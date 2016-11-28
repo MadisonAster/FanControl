@@ -83,10 +83,10 @@ Because of this behavior, the floating point numbers that the sliders in my soft
 
 I ended up trying out a number of different fan brands during this process, and the electronic implementation of pwm on various fans appears to vary widely. 
 
-    Arctic F12 - output 8v on pwm pin - does nothing when connected to ground
-    Noctua Fan F12 pro - output 1.8v on pwm pin - completely off when connected to ground
-    Coolermaster 120 - output 2.2v on pwm pin - low speed when connected to ground
-    Enermax PWM - output 1.3v on pwm pin - low speed when connected to ground
+    Arctic F12          - output 8v on pwm pin      - does nothing when connected to ground
+    Noctua Fan F12 pro  - output 1.8v on pwm pin    - completely off when connected to ground
+    Coolermaster 120    - output 2.2v on pwm pin    - low speed when connected to ground
+    Enermax PWM         - output 1.3v on pwm pin    - low speed when connected to ground
 
 From this I can only deduce that the Arctic fans, Noctua fans, and presumably many other brands are not implemented to spec. If anyone has a better explanation about what I've seen here, or can tell me if I've done something wrong, please let me know. I think that I'm right however, because there's very little information about these things available on the web, leading me to believe that this issue has simply been overlooked.
 
