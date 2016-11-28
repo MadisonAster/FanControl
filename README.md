@@ -3,10 +3,13 @@
 A pwm control software for use with the 7inch official raspberry pi touch screen.
 
 I put this together to control the speed of the fans in my server rack. The fans are on a 12v supply, and I connected the individual signal inputs using an array of optocouplers I built.
+
+Every time the software pulses the gpio pin on one of the optocouplers it connects the signal pwm pin from one of the fans to the 12v ground.
 ![OptocouplerArray](OptocouplerArray.jpg)
 
 
 ##Interface
+The numbering is a little weird, I needed 15 fans total, so I followed the numbering on the breadboard, using every odd number to correspond to the gpio pin of the same number. GPIO 1 and GPIO 29 aren't exposed though, so I used 10 and 26 in their place.
 <p align="left">
   <img src="MainScreen.png" width="400"/>
   <img src="SettingsScreen.png" width="400"/>
