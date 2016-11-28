@@ -103,4 +103,4 @@ This script assumes only that you have installed the full version of raspbian, i
     
 this will clone the necessary repositories into /home/pi/FanControl, install qt, pyside, and my fork of pi-blaster. It will also create a shell script at /home/pi/StartupScript.sh that will run the program on start
 
-The script should work on a fresh raspbian installation, qt installation on a raspberry pi can take upwards of an hour though, so be prepared to do some waiting.
+The script should work on a fresh raspbian installation, qt installation on a raspberry pi can take several hours though, so be prepared to do some waiting. A binary would clearly be better for distribution, but I doubt anyone will use any of this without doing their own modifications.
