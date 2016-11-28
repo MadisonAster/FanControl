@@ -8,9 +8,9 @@ and I connected the individual signal inputs using an array of optocouplers I bu
 
 ##Interface
 <p align="left">
-  <img src="MainScreen.png" width="500"/>
-  <img src="SettingsScreen.png" width="500"/>
-  <img src="KeyboardScreen.png" width="500"/>
+  <img src="MainScreen.png" width="450"/>
+  <img src="SettingsScreen.png" width="450"/>
+  <img src="KeyboardScreen.png" width="450"/>
 </p>
 
 ##Final Installation
