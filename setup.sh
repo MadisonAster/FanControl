@@ -13,7 +13,7 @@ apt-get -y install libqtwebkit-dev
 apt-get -y install qt4-dev-tools
 pip install -U PySide
 cd /home/pi
-git clone https://github.com/ThomasMcVay/FanControl.git
+git clone https://github.com/MadisonAster/FanControl.git
 cd ./FanControl
 git submodule init
 git submodule update

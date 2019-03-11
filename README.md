@@ -95,7 +95,7 @@ From this I can only deduce that the Arctic fans, Noctua fans, and presumably ma
 
 #Raspbian Installation
 
-Simply download [setup.sh](https://raw.githubusercontent.com/ThomasMcVay/FanControl/master/setup.sh) and run it like so:
+Simply download [setup.sh](https://raw.githubusercontent.com/MadisonAster/FanControl/master/setup.sh) and run it like so:
 
     sudo bash setup.sh
     
